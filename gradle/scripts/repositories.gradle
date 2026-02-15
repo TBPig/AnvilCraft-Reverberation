@@ -6,6 +6,7 @@ repositories {
         url = "https://server.cjsah.net:1002/maven/"
         content {
             includeGroup "dev.anvilcraft.lib"
+            includeGroup "dev.anvilcraft.guideme"
             includeGroup "dev.dubhe"
         }
     }
@@ -15,5 +16,23 @@ repositories {
         content {
             includeGroup "com.tterrag.registrate"
         }
+    }
+    maven { // Modrinth File, LazyDFU, Jade
+        name = "Modrinth Maven"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven { // CurseForge File
+        name = "CurseForge Maven"
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven { // JEI
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
     }
 }

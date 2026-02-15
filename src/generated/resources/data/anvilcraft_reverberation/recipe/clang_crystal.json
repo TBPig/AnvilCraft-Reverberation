@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "anvilcraft_reverberation:acoustic_component"
+    },
+    "B": {
+      "item": "minecraft:amethyst_block"
+    },
+    "C": {
+      "tag": "c:ingots/bronze"
+    }
+  },
+  "pattern": [
+    "AAA",
+    "CBC",
+    "CCC"
+  ],
+  "result": {
+    "count": 4,
+    "id": "anvilcraft_reverberation:clang_crystal"
+  }
+}

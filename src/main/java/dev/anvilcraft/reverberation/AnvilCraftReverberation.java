@@ -1,0 +1,34 @@
+package dev.anvilcraft.reverberation;
+
+import com.mojang.logging.LogUtils;
+import com.tterrag.registrate.Registrate;
+import dev.anvilcraft.reverberation.data.AddonDatagen;
+import dev.anvilcraft.reverberation.init.AddonBlocks;
+import dev.anvilcraft.reverberation.init.AddonItemGroups;
+import dev.anvilcraft.reverberation.init.AddonItems;
+import dev.anvilcraft.lib.config.ConfigManager;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import org.slf4j.Logger;
+
+@SuppressWarnings("unused")
+@Mod(AnvilCraftReverberation.MOD_ID)
+public class AnvilCraftReverberation {
+    public static final String MOD_ID = "anvilcraft_reverberation";
+    public static final Logger LOGGER = LogUtils.getLogger();
+    public static final AddonConfig CONFIG = ConfigManager.register(AnvilCraftReverberation.MOD_ID, AddonConfig::new);
+    public static final Registrate REGISTRATE = Registrate.create(MOD_ID);
+
+    public AnvilCraftReverberation(IEventBus modEventBus, ModContainer modContainer) {
+        AddonItemGroups.register(modEventBus);
+        AddonBlocks.register();
+        AddonItems.register();
+        AddonDatagen.init();
+    }
+
+    public static ResourceLocation of(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
+}
