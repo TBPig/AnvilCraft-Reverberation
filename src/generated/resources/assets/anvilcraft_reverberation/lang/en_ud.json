@@ -3,6 +3,8 @@
   "anvilcraft_reverberation.configuration.section.anvilcraft_reverberation.common.toml.title": "uoıʇɐɹnbıɟuoƆ uoɯɯoƆ uoıʇɐɹǝqɹǝʌǝᴚ ʇɟɐɹɔןıʌuⱯ",
   "anvilcraft_reverberation.configuration.title": "uoıʇɐɹnbıɟuoƆ uoıʇɐɹǝqɹǝʌǝᴚ ʇɟɐɹɔןıʌuⱯ",
   "block.anvilcraft_reverberation.clang_crystal": "ןɐʇsʎɹƆ buɐןƆ",
+  "block.anvilcraft_reverberation.merge_sound_pillar": "ɹɐןןıԀ punoS ǝbɹǝW",
   "item.anvilcraft_reverberation.acoustic_component": "ʇuǝuodɯoƆ ɔıʇsnoɔⱯ",
-  "itemGroup.anvilcraft_reverberation.reverberation": "uoıʇɐɹǝqɹǝʌǝᴚ :ʇɟɐɹƆןıʌuⱯ"
+  "itemGroup.anvilcraft_reverberation.reverberation": "uoıʇɐɹǝqɹǝʌǝᴚ :ʇɟɐɹƆןıʌuⱯ",
+  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "%s :ʎbɹǝuƎ punoS"
 }

@@ -1,0 +1,25 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench by TBpig",
+	"parent": "minecraft:block/block",
+	"textures": {
+		"0": "anvilcraft_reverberation:block/merge_sound_pillar_side",
+		"1": "anvilcraft_reverberation:block/merge_sound_pillar_top",
+		"2": "anvilcraft_reverberation:block/merge_sound_pillar_bottom",
+		"particle": "anvilcraft_reverberation:block/merge_sound_pillar_side"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#2"}
+			}
+		}
+	]
+}

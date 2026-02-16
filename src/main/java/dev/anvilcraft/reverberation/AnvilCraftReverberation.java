@@ -3,6 +3,7 @@ package dev.anvilcraft.reverberation;
 import com.mojang.logging.LogUtils;
 import com.tterrag.registrate.Registrate;
 import dev.anvilcraft.reverberation.data.AddonDatagen;
+import dev.anvilcraft.reverberation.init.AddonBlockEntities;
 import dev.anvilcraft.reverberation.init.AddonBlocks;
 import dev.anvilcraft.reverberation.init.AddonItemGroups;
 import dev.anvilcraft.reverberation.init.AddonItems;
@@ -24,6 +25,7 @@ public class AnvilCraftReverberation {
     public AnvilCraftReverberation(IEventBus modEventBus, ModContainer modContainer) {
         AddonItemGroups.register(modEventBus);
         AddonBlocks.register();
+        AddonBlockEntities.register();
         AddonItems.register();
         AddonDatagen.init();
     }
