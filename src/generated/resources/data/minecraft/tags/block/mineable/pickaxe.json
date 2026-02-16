@@ -1,6 +1,7 @@
 {
   "values": [
     "anvilcraft_reverberation:clang_crystal",
-    "anvilcraft_reverberation:merge_sound_pillar"
+    "anvilcraft_reverberation:merge_sound_pillar",
+    "anvilcraft_reverberation:anvil_sound_reactor"
   ]
 }

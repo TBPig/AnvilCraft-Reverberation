@@ -23,6 +23,12 @@ public enum MergeSoundPillarProvider implements IBlockComponentProvider, IServer
                 serverData.getInt("energy")
             ));
         }
+        if (serverData.contains("sourceNum")) {
+            tooltip.add(Component.translatable(
+                "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num",
+                serverData.getInt("sourceNum")
+            ));
+        }
 
     }
 
@@ -30,6 +36,7 @@ public enum MergeSoundPillarProvider implements IBlockComponentProvider, IServer
     public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
         if (accessor.getBlockEntity() instanceof MergeSoundPillarBlockEntity entity) {
             tag.putInt("energy", entity.getMergeSound().getEnergy());
+            tag.putInt("sourceNum", entity.getMergeSound().getSourceNum());
         }
     }
 

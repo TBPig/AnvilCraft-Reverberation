@@ -2,9 +2,11 @@
   "anvilcraft_reverberation.configuration.section.anvilcraft_reverberation.common.toml": "Anvilcraft Reverberation Common Configuration",
   "anvilcraft_reverberation.configuration.section.anvilcraft_reverberation.common.toml.title": "Anvilcraft Reverberation Common Configuration",
   "anvilcraft_reverberation.configuration.title": "Anvilcraft Reverberation Configuration",
+  "block.anvilcraft_reverberation.anvil_sound_reactor": "Anvil Sound Reactor",
   "block.anvilcraft_reverberation.clang_crystal": "Clang Crystal",
   "block.anvilcraft_reverberation.merge_sound_pillar": "Merge Sound Pillar",
   "item.anvilcraft_reverberation.acoustic_component": "Acoustic Component",
   "itemGroup.anvilcraft_reverberation.reverberation": "AnvilCraft: Reverberation",
-  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "Sound Energy: %s"
+  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "Sound Energy: %s",
+  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num": "Source Num: %s"
 }

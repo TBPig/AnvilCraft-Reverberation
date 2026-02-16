@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "anvilcraft_reverberation:block/anvil_sound_reactor"
+    },
+    "facing=east": {
+      "model": "anvilcraft_reverberation:block/anvil_sound_reactor",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "anvilcraft_reverberation:block/anvil_sound_reactor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "anvilcraft_reverberation:block/anvil_sound_reactor",
+      "y": 270
+    }
+  }
+}

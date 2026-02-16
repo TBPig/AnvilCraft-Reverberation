@@ -2,7 +2,11 @@
   "anvilcraft_reverberation.configuration.section.anvilcraft_reverberation.common.toml": "砧音绕梁常规配置",
   "anvilcraft_reverberation.configuration.section.anvilcraft_reverberation.common.toml.title": "砧音绕梁常规配置",
   "anvilcraft_reverberation.configuration.title": "铁砧工艺：砧音绕梁 配置",
+  "block.anvilcraft_reverberation.anvil_sound_reactor": "砧音反应釜",
   "block.anvilcraft_reverberation.clang_crystal": "哐当晶体",
+  "block.anvilcraft_reverberation.merge_sound_pillar": "合音柱",
   "item.anvilcraft_reverberation.acoustic_component": "鸣音部件",
-  "itemGroup.anvilcraft_reverberation.reverberation": "铁砧工艺：砧音绕梁"
+  "itemGroup.anvilcraft_reverberation.reverberation": "铁砧工艺：砧音绕梁",
+  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "声能: %s",
+  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num": "声源数量: %s"
 }

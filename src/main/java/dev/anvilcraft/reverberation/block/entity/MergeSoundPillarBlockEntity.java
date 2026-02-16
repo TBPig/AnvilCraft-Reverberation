@@ -1,70 +1,57 @@
 package dev.anvilcraft.reverberation.block.entity;
 
-import dev.anvilcraft.reverberation.api.ISoundConsumer;
-import dev.anvilcraft.reverberation.api.ISoundProducer;
+import dev.anvilcraft.reverberation.api.ISoundReceiver;
 import dev.anvilcraft.reverberation.api.MergeSound;
+import dev.anvilcraft.reverberation.api.MergeSoundStore;
 import dev.anvilcraft.reverberation.api.SoundWave;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.List;
-import java.util.Set;
-
-public class MergeSoundPillarBlockEntity extends BlockEntity implements ISoundConsumer {
+public class MergeSoundPillarBlockEntity extends BlockEntity implements ISoundReceiver {
     public static final int PERIOD = 20;
-    public static final int SELECTION_COOLDOWN = 200;
-    private final List<BlockPos> SELECTION_POSITIONS =
-        BlockPos.betweenClosedStream(-7, 0, -7, 7, 0, 7)
-            .map(BlockPos::immutable)
-            .map((blockPos) -> this.getBlockPos().offset(blockPos))
-            .toList();
+    public static final int RECEIVE_RANGE = 6;
 
-    private MergeSound newMergeSound;
-    private MergeSound lastMergeSound;
+    private final MergeSoundStore sound;
     private int tickCount = 0;
-    private int selectionTime = 0;
-    private Set<BlockPos> producerPositions = Set.of();
 
     public MergeSoundPillarBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
         super(type, pos, blockState);
-        newMergeSound = new MergeSound();
+        sound = new MergeSoundStore();
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.putInt("tickCount", tickCount);
+    }
+
+    @Override
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+        tickCount = tag.getInt("tickCount");
     }
 
     public void tick() {
         if (level == null) return;
         if (--tickCount <= 0) {
             tickCount = PERIOD;
-            lastMergeSound = newMergeSound;
-            newMergeSound = new MergeSound();
-        }
-        if (--selectionTime <= 0) {
-            selectionTime = SELECTION_COOLDOWN + level.random.nextInt(SELECTION_COOLDOWN);
-            this.select();
+            sound.store();
         }
     }
 
     @Override
-    public void consumeSound(SoundWave soundWave) {
-        this.newMergeSound.add(soundWave);
-    }
-
-    @Override
-    public Set<BlockPos> getProducerPositions() {
-        return producerPositions;
+    public boolean receiveSound(SoundWave soundWave) {
+        if (getBlockPos().distManhattan(soundWave.pos()) > RECEIVE_RANGE) return false;
+        this.sound.add(soundWave);
+        return true;
     }
 
     public MergeSound getMergeSound() {
-        return lastMergeSound;
+        return sound.getLastSound();
     }
 
-    private void select() {
-        if (level == null) return;
-        SELECTION_POSITIONS.forEach((blockPos) -> {
-            if (level.getBlockEntity(blockPos) instanceof ISoundProducer soundProducer) {
-                connect(soundProducer);
-            }
-        });
-    }
 }

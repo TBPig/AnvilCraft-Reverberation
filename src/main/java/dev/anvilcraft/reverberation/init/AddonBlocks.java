@@ -1,6 +1,7 @@
 package dev.anvilcraft.reverberation.init;
 
 import com.tterrag.registrate.util.entry.BlockEntry;
+import dev.anvilcraft.reverberation.block.AnvilSoundReactorBlock;
 import dev.anvilcraft.reverberation.block.ClangCrystalBlock;
 import dev.anvilcraft.reverberation.block.MergeSoundPillarBlock;
 import dev.dubhe.anvilcraft.data.AnvilCraftDatagen;
@@ -51,6 +52,23 @@ public class AddonBlocks {
             .pattern("CCC")
             .define('A', AddonItems.ACOUSTIC_COMPONENT)
             .define('B', Items.AMETHYST_BLOCK)
+            .define('C', ModItemTags.BRONZE_INGOTS)
+            .unlockedBy(AnvilCraftDatagen.hasItem(ModItemTags.BRONZE_INGOTS), AnvilCraftDatagen.has(ModItemTags.BRONZE_INGOTS))
+            .save(provider)
+        )
+        .register();
+
+    public static final BlockEntry<AnvilSoundReactorBlock> ANVIL_SOUND_REACTOR = REGISTRATE
+        .block("anvil_sound_reactor", AnvilSoundReactorBlock::new)
+        .initialProperties(() -> Blocks.IRON_BLOCK)
+        .blockstate(DataGenUtil::noExtraModelOrState)
+        .tag(BlockTags.MINEABLE_WITH_PICKAXE)
+        .simpleItem()
+        .recipe((ctx, provider) -> ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ctx.get())
+            .pattern("C C")
+            .pattern("A A")
+            .pattern("CCC")
+            .define('A', AddonItems.ACOUSTIC_COMPONENT)
             .define('C', ModItemTags.BRONZE_INGOTS)
             .unlockedBy(AnvilCraftDatagen.hasItem(ModItemTags.BRONZE_INGOTS), AnvilCraftDatagen.has(ModItemTags.BRONZE_INGOTS))
             .save(provider)

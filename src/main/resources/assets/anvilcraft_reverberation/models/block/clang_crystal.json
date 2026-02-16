@@ -2,7 +2,6 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench by TBpig",
 	"parent": "minecraft:block/block",
-	"ambientocclusion": false,
 	"textures": {
 		"0": "anvilcraft_reverberation:block/clang_crystal_bottom",
 		"1": "anvilcraft_reverberation:block/clang_crystal_side",

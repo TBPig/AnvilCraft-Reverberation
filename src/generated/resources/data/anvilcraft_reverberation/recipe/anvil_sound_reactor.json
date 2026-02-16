@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "anvilcraft_reverberation:acoustic_component"
+    },
+    "C": {
+      "tag": "c:ingots/bronze"
+    }
+  },
+  "pattern": [
+    "C C",
+    "A A",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "anvilcraft_reverberation:anvil_sound_reactor"
+  }
+}

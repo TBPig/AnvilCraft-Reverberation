@@ -11,9 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ClangCrystalBehavior implements IAnvilBehavior {
     @Override
     public boolean handle(Level level, BlockPos hitBlockPos, BlockState hitBlockState, float fallDistance, AnvilEvent.OnLand event) {
-        ClangCrystalBlock block = (ClangCrystalBlock) hitBlockState.getBlock();
         Block anvil = event.getEntity().getBlockState().getBlock();
-        block.hitByAnvil(level, hitBlockPos, fallDistance, anvil);
-        return false;
+        ClangCrystalBlock.hitByAnvil(level, hitBlockPos, fallDistance, anvil);
+        return true;
     }
 }
