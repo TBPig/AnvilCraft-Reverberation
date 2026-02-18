@@ -19,7 +19,7 @@ public enum MergeSoundPillarProvider implements IBlockComponentProvider, IServer
         CompoundTag serverData = accessor.getServerData();
         if (serverData.contains("loudness")) {
             tooltip.add(Component.translatable(
-                "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy",
+                "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.loudness",
                 serverData.getInt("loudness")
             ));
         }

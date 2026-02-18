@@ -8,6 +8,7 @@ import dev.anvilcraft.reverberation.init.AddonBlocks;
 import dev.anvilcraft.reverberation.init.AddonItemGroups;
 import dev.anvilcraft.reverberation.init.AddonItems;
 import dev.anvilcraft.lib.config.ConfigManager;
+import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -24,9 +25,10 @@ public class AnvilCraftReverberation {
 
     public AnvilCraftReverberation(IEventBus modEventBus, ModContainer modContainer) {
         AddonItemGroups.register(modEventBus);
+        AddonItems.register();
         AddonBlocks.register();
         AddonBlockEntities.register();
-        AddonItems.register();
+        AddonRecipeType.register(modEventBus);
         AddonDatagen.init();
     }
 

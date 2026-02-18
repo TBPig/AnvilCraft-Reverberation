@@ -7,6 +7,6 @@
   "block.anvilcraft_reverberation.merge_sound_pillar": "Merge Sound Pillar",
   "item.anvilcraft_reverberation.acoustic_component": "Acoustic Component",
   "itemGroup.anvilcraft_reverberation.reverberation": "AnvilCraft: Reverberation",
-  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "Sound Energy: %s",
+  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.loudness": "Sound Energy: %s",
   "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num": "Source Num: %s"
 }
