@@ -20,10 +20,10 @@ public enum Melody {
             int frostEnergy = 0;
             int emberEnergy = 0;
             for (SoundWave soundWave : soundWaves) {
-                if (soundWave.kind() == SoundKind.FROST) {
-                    frostEnergy += soundWave.energy();
-                } else if (soundWave.kind() == SoundKind.EMBER) {
-                    emberEnergy += soundWave.energy();
+                if (soundWave.pitch() == SoundKind.FROST) {
+                    frostEnergy += soundWave.loudness();
+                } else if (soundWave.pitch() == SoundKind.EMBER) {
+                    emberEnergy += soundWave.loudness();
                 }
             }
             if (frostEnergy == emberEnergy) melodies.add(ABLATION);

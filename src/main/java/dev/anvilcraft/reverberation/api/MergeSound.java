@@ -23,8 +23,8 @@ public class MergeSound {
     }
 
     public MergeSound add(SoundWave soundWave) {
-        this.kinds.add(soundWave.kind());
-        this.energy += soundWave.energy();
+        this.kinds.add(soundWave.pitch());
+        this.energy += soundWave.loudness();
         this.positions.add(soundWave.pos());
         this.soundWaves.add(soundWave);
         return this;
