@@ -8,8 +8,9 @@ import dev.dubhe.anvilcraft.init.item.ModItemTags;
 public class SoundReactorRecipeLoader {
     public static void init(RegistrateRecipeProvider provider) {
         SoundReactorRecipe.builder()
-            .requires(ModItemTags.BRONZE_PLATES)
+            .requires(ModItemTags.BRONZE_PLATES, 2)
             .result(AddonItems.ACOUSTIC_COMPONENT.get())
+            .energy(10)
             .save(provider);
     }
 }

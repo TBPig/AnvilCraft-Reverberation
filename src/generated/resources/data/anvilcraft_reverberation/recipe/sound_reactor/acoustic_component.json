@@ -1,6 +1,8 @@
 {
   "type": "anvilcraft_reverberation:sound_reactor_recipe",
+  "energy": 10,
   "ingredient": {
+    "count": 2,
     "items": "#c:plates/bronze"
   },
   "priority": 0,

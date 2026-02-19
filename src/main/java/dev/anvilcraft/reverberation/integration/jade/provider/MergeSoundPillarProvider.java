@@ -17,10 +17,10 @@ public enum MergeSoundPillarProvider implements IBlockComponentProvider, IServer
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
         CompoundTag serverData = accessor.getServerData();
-        if (serverData.contains("loudness")) {
+        if (serverData.contains("energy")) {
             tooltip.add(Component.translatable(
-                "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.loudness",
-                serverData.getInt("loudness")
+                "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy",
+                serverData.getInt("energy")
             ));
         }
         if (serverData.contains("sourceNum")) {
@@ -35,7 +35,7 @@ public enum MergeSoundPillarProvider implements IBlockComponentProvider, IServer
     @Override
     public void appendServerData(CompoundTag tag, BlockAccessor accessor) {
         if (accessor.getBlockEntity() instanceof MergeSoundPillarBlockEntity entity) {
-            tag.putInt("loudness", entity.getMergeSound().getEnergy());
+            tag.putInt("energy", entity.getMergeSound().getEnergy());
             tag.putInt("sourceNum", entity.getMergeSound().getSourceNum());
         }
     }

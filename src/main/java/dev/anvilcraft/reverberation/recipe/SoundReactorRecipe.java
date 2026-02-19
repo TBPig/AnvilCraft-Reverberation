@@ -3,7 +3,6 @@ package dev.anvilcraft.reverberation.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.anvilcraft.lib.recipe.component.ChanceItemStack;
 import dev.anvilcraft.lib.recipe.component.ItemIngredientPredicate;
 import dev.anvilcraft.reverberation.AnvilCraftReverberation;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
@@ -29,9 +28,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
@@ -40,15 +36,17 @@ import java.util.Map;
 public class SoundReactorRecipe implements Recipe<RecipeInput> {
     private final ItemIngredientPredicate input;
     private final ItemStack result;
+    private final int energy;
     private final int priority;
 
     public SoundReactorRecipe(
         ItemIngredientPredicate input,
-        ItemStack result,
+        ItemStack result, int energy,
         int priority
     ) {
         this.input = input;
         this.result = result;
+        this.energy = energy;
         this.priority = priority;
     }
 
@@ -94,6 +92,10 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         return result;
     }
 
+    public int energy() {
+        return energy;
+    }
+
     public int priority() {
         return priority;
     }
@@ -105,18 +107,21 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         private static final MapCodec<SoundReactorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundReactorRecipe::ingredient),
             ItemStack.CODEC.fieldOf("result").forGetter(SoundReactorRecipe::result),
-            Codec.INT.fieldOf("priority").orElse(1).forGetter(SoundReactorRecipe::priority)
+            Codec.INT.fieldOf("energy").orElse(0).forGetter(SoundReactorRecipe::energy),
+            Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundReactorRecipe::priority)
         ).apply(instance, SoundReactorRecipe::new));
 
         private static final StreamCodec<RegistryFriendlyByteBuf, SoundReactorRecipe> STREAM_CODEC = StreamCodec.of(
             (buf, recipe) -> {
                 ItemIngredientPredicate.STREAM_CODEC.encode(buf, recipe.ingredient());
                 ItemStack.STREAM_CODEC.encode(buf, recipe.result());
+                buf.writeInt(recipe.energy());
                 buf.writeInt(recipe.priority());
             },
             (buf) -> new SoundReactorRecipe(
                 ItemIngredientPredicate.STREAM_CODEC.decode(buf),
                 ItemStack.STREAM_CODEC.decode(buf),
+                buf.readInt(),
                 buf.readInt()
             )
         );
@@ -135,6 +140,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
     public static class Builder implements RecipeBuilder {
         private @Nullable ItemIngredientPredicate input;
         private @Nullable ItemStack result;
+        private int energy = 0;
         private int priority = 0;
         protected final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
 
@@ -172,8 +178,14 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
             this.result.setCount(count);
             return this;
         }
+
         public Builder result(Item result) {
             return result(result, 1);
+        }
+
+        public Builder energy(int energy) {
+            this.energy = energy;
+            return this;
         }
 
         public Builder priority(int priority) {
@@ -204,6 +216,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
             SoundReactorRecipe recipe = new SoundReactorRecipe(
                 input,
                 result,
+                energy,
                 priority
             );
             output.accept(id, recipe, advancement.build(id.withPrefix("recipes/")));

@@ -1,5 +1,6 @@
 package dev.anvilcraft.reverberation.api;
 
+import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -25,5 +26,11 @@ public class MergeSoundStore extends MergeSound {
 
     public MergeSound getLastSound() {
         return soundHistory.getLast() == null ? new MergeSound() : soundHistory.getLast();
+    }
+
+    public boolean isValid(SoundReactorRecipe recipe) {
+        if (getEnergy() < recipe.energy()) return false;
+
+        return true;
     }
 }

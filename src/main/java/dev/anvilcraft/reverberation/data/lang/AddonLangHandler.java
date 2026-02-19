@@ -15,7 +15,7 @@ public class AddonLangHandler {
         ConfigData.readConfigClass(provider, AddonConfig.class);
 
 //        provider.add("config.jade.plugin_anvilcraft_pigsplus.enchanted_generator", "Enchanted Generator");
-        provider.add("tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.loudness", "Sound Energy: %s");
+        provider.add("tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy", "Sound Energy: %s");
         provider.add("tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num", "Source Num: %s");
     }
 }

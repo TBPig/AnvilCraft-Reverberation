@@ -1,5 +1,6 @@
 package dev.anvilcraft.reverberation.block;
 
+import dev.anvilcraft.reverberation.block.entity.MergeSoundPillarBlockEntity;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
 import dev.dubhe.anvilcraft.api.hammer.IHammerRemovable;
@@ -24,9 +25,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -58,26 +58,24 @@ public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
 
     public static void hitByAnvil(Level level, BlockPos pos, BlockState reactor) {
         // 搜索本格的ItemEntity，获取ItemStack
-        Map<ItemEntity, ItemStack> items = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos)).stream()
-            .map(it -> Map.entry(it, it.getItem()))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        if (items.isEmpty()) return;
+        List<ItemEntity> entities = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos));
+        if (entities.isEmpty()) return;
 
         Direction direction = reactor.getValue(FACING);
         Vec3 spawnPos = pos.offset(direction.getStepX(), 0, direction.getStepZ()).getCenter();
 
-        for (ItemEntity itemEntity : items.keySet()) {
+        for (ItemEntity itemEntity : entities) {
             // 检测是否有对应配方
-            ItemStack itemStack = items.get(itemEntity);
+            ItemStack itemStack = itemEntity.getItem();
             SingleRecipeInput input = new SingleRecipeInput(itemStack);
             Optional<RecipeHolder<SoundReactorRecipe>> recipes = level.getRecipeManager()
                 .getRecipeFor(AddonRecipeType.SOUND_REACTOR_TYPE.get(), input, level);
             if (recipes.isEmpty()) continue;
-
-            // 获得结果
             SoundReactorRecipe recipe = recipes.get().value();
-            ItemStack result = recipe.result();
-            if (result.isEmpty()) continue;
+
+            // 条件判定
+            if (!(level.getBlockEntity(pos.below()) instanceof MergeSoundPillarBlockEntity pillar)) continue;
+            if (!pillar.isValid(recipe)) continue;
 
             // 消耗物品
             int count = recipe.ingredient().count();
@@ -85,6 +83,7 @@ public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
             itemEntity.getItem().shrink(count);
 
             // 生成物品
+            ItemStack result = recipe.result();
             ItemEntity resultEntity = new ItemEntity(level, spawnPos.x, spawnPos.y, spawnPos.z, result.copy(), 0, 0, 0);
             level.addFreshEntity(resultEntity);
         }
