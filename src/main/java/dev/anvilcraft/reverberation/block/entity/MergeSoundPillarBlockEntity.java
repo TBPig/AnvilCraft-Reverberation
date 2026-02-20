@@ -59,4 +59,7 @@ public class MergeSoundPillarBlockEntity extends BlockEntity implements ISoundRe
         return sound.isValid(recipe);
     }
 
+    public int getAnalogOutputSignal() {
+        return tickCount == PERIOD ? 15 : 0;
+    }
 }

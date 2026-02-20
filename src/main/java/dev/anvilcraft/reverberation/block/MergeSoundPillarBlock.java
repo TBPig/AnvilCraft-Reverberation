@@ -1,6 +1,7 @@
 package dev.anvilcraft.reverberation.block;
 
 import com.mojang.serialization.MapCodec;
+import dev.anvilcraft.reverberation.block.entity.MergeSoundPillarBlockEntity;
 import dev.anvilcraft.reverberation.init.AddonBlockEntities;
 import dev.dubhe.anvilcraft.api.hammer.IHammerRemovable;
 import net.minecraft.core.BlockPos;
@@ -42,5 +43,19 @@ public class MergeSoundPillarBlock extends BaseEntityBlock implements IHammerRem
             AddonBlockEntities.MERGE_SOUND_PILLAR.get(),
             (level1, blockPos, blockState, blockEntity) -> blockEntity.tick()
         );
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState blockState) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos blockPos) {
+        BlockEntity blockEntity = level.getBlockEntity(blockPos);
+        if (blockEntity instanceof MergeSoundPillarBlockEntity mergeSoundPillarBlockEntity) {
+            return mergeSoundPillarBlockEntity.getAnalogOutputSignal();
+        }
+        return 0;
     }
 }

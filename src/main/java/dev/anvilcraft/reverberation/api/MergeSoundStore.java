@@ -11,7 +11,7 @@ import java.util.List;
  * 因此可以表现旋律是否启用
  */
 public class MergeSoundStore extends MergeSound {
-    public static final int DEFAULT_CAPACITY = 10;
+    public static final int DEFAULT_CAPACITY = 8;
 
     @Getter
     private final List<MergeSound> soundHistory = new ArrayList<>(DEFAULT_CAPACITY);
@@ -29,8 +29,27 @@ public class MergeSoundStore extends MergeSound {
     }
 
     public boolean isValid(SoundReactorRecipe recipe) {
-        if (getEnergy() < recipe.energy()) return false;
+        if (soundHistory.isEmpty()) return false;
+        
+        int currentEnergy = soundHistory.getLast().getEnergy();
+        int currentSourceNum = soundHistory.getLast().getSourceNum();
+        
+        // 检查能量范围
+        if (recipe.getMinEnergy() != null && currentEnergy < recipe.getMinEnergy()) {
+            return false;
+        }
+        if (recipe.getMaxEnergy() != null && currentEnergy > recipe.getMaxEnergy()) {
+            return false;
+        }
 
+        // 检查声源数量范围
+        if (recipe.getMinSourceNum() != null && currentSourceNum < recipe.getMinSourceNum()) {
+            return false;
+        }
+        if (recipe.getMaxSourceNum() != null && currentSourceNum > recipe.getMaxSourceNum()) {
+            return false;
+        }
+        
         return true;
     }
 }

@@ -10,7 +10,7 @@ public class SoundReactorRecipeLoader {
         SoundReactorRecipe.builder()
             .requires(ModItemTags.BRONZE_PLATES, 2)
             .result(AddonItems.ACOUSTIC_COMPONENT.get())
-            .energy(10)
+            .minEnergy(10)
             .save(provider);
     }
 }

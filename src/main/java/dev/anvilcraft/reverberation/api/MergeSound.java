@@ -30,14 +30,6 @@ public class MergeSound {
         return this;
     }
 
-    public static MergeSound of(List<SoundWave> soundWaves) {
-        MergeSound mergeSound = new MergeSound();
-        for (SoundWave soundWave : soundWaves) {
-            mergeSound.add(soundWave);
-        }
-        return mergeSound;
-    }
-
     public MergeSound copy() {
         MergeSound mergeSound = new MergeSound();
         mergeSound.kinds.addAll(this.kinds);
