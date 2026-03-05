@@ -3,18 +3,14 @@ package dev.anvilcraft.reverberation.api;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 
-public record SoundWave(SoundKind pitch, int loudness, BlockPos pos) {
+public record SoundWave(int loudness, Timbre timbre, BlockPos pos) {
 
-    public SoundWave(Block anvil, int energy, BlockPos pos) {
-        this(SoundKind.getInstance(anvil), energy, pos);
-    }
-
-    public boolean satisfy(SoundWave other) {
-        return this.pitch.equals(other.pitch) && this.loudness >= other.loudness;
+    public SoundWave(int loudness, Block timbre, BlockPos pos) {
+        this(loudness, Timbre.of(timbre), pos);
     }
 
     public SoundWave copy() {
-        return new SoundWave(this.pitch, this.loudness, this.pos);
+        return new SoundWave(this.loudness, this.timbre, this.pos);
     }
 
 }

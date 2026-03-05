@@ -10,30 +10,29 @@ import java.util.Set;
 
 /**
  * 合并的音波；
- * 纪录声源数量，砧音能，砧音种类
+ * 纪录砧音能，出现的音色，声源数量
  */
 @Getter
 public class MergeSound {
-    private final Set<SoundKind> kinds = new HashSet<>();
     private int energy = 0;
+    private final Set<Timbre> timbreSet = new HashSet<>();
     private final Set<BlockPos> positions = new HashSet<>();
     private final List<SoundWave> soundWaves = new ArrayList<>();
 
     public MergeSound() {
     }
 
-    public MergeSound add(SoundWave soundWave) {
-        this.kinds.add(soundWave.pitch());
+    public void add(SoundWave soundWave) {
         this.energy += soundWave.loudness();
+        this.timbreSet.add(soundWave.timbre());
         this.positions.add(soundWave.pos());
         this.soundWaves.add(soundWave);
-        return this;
     }
 
     public MergeSound copy() {
         MergeSound mergeSound = new MergeSound();
-        mergeSound.kinds.addAll(this.kinds);
         mergeSound.energy = this.energy;
+        mergeSound.timbreSet.addAll(this.timbreSet);
         mergeSound.positions.addAll(this.positions);
         mergeSound.soundWaves.addAll(this.soundWaves);
         return mergeSound;
@@ -44,8 +43,8 @@ public class MergeSound {
     }
 
     public void clear() {
-        this.kinds.clear();
         this.energy = 0;
+        this.timbreSet.clear();
         this.positions.clear();
         this.soundWaves.clear();
     }

@@ -30,10 +30,11 @@ public class MergeSoundStore extends MergeSound {
 
     public boolean isValid(SoundReactorRecipe recipe) {
         if (soundHistory.isEmpty()) return false;
-        
-        int currentEnergy = soundHistory.getLast().getEnergy();
-        int currentSourceNum = soundHistory.getLast().getSourceNum();
-        
+
+        MergeSound lastSound = soundHistory.getLast();
+        int currentEnergy = lastSound.getEnergy();
+        int currentSourceNum = lastSound.getSourceNum();
+
         // 检查能量范围
         if (recipe.getMinEnergy() != null && currentEnergy < recipe.getMinEnergy()) {
             return false;
@@ -49,7 +50,7 @@ public class MergeSoundStore extends MergeSound {
         if (recipe.getMaxSourceNum() != null && currentSourceNum > recipe.getMaxSourceNum()) {
             return false;
         }
-        
+
         return true;
     }
 }

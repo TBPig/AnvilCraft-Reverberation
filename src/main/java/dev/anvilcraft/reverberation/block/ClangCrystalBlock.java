@@ -38,9 +38,10 @@ public class ClangCrystalBlock extends Block implements IHammerRemovable {
         return SHAPE;
     }
 
-    public static void hitByAnvil(Level level, BlockPos pos, float fallDistance, Block anvil) {
+    public static void hitByAnvil(Level level, BlockPos pos, float fallDistance) {
         int energy = Mth.ceil(fallDistance);
-        SoundWave wave = new SoundWave(anvil, energy, pos);
+        Block bottomBlock = level.getBlockState(pos.below()).getBlock();
+        SoundWave wave = new SoundWave(energy, bottomBlock, pos);
         for (BlockPos offset : SPREAD_OFFSETS) {
             BlockPos selectPos = pos.offset(offset);
             BlockEntity entity = level.getBlockEntity(selectPos);
