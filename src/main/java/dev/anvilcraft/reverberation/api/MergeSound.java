@@ -2,6 +2,7 @@ package dev.anvilcraft.reverberation.api;
 
 import lombok.Getter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,8 +15,9 @@ import java.util.Set;
  */
 @Getter
 public class MergeSound {
-    private final Set<SoundKind> kinds = new HashSet<>();
     private int energy = 0;
+    private final Set<Pitch> pitchSet = new HashSet<>();
+    private final Set<Block> timbreSet = new HashSet<>();
     private final Set<BlockPos> positions = new HashSet<>();
     private final List<SoundWave> soundWaves = new ArrayList<>();
 
@@ -23,8 +25,9 @@ public class MergeSound {
     }
 
     public MergeSound add(SoundWave soundWave) {
-        this.kinds.add(soundWave.pitch());
         this.energy += soundWave.loudness();
+        this.pitchSet.add(soundWave.pitch());
+        this.timbreSet.add(soundWave.timbre());
         this.positions.add(soundWave.pos());
         this.soundWaves.add(soundWave);
         return this;
@@ -32,8 +35,9 @@ public class MergeSound {
 
     public MergeSound copy() {
         MergeSound mergeSound = new MergeSound();
-        mergeSound.kinds.addAll(this.kinds);
         mergeSound.energy = this.energy;
+        mergeSound.pitchSet.addAll(this.pitchSet);
+        mergeSound.timbreSet.addAll(this.timbreSet);
         mergeSound.positions.addAll(this.positions);
         mergeSound.soundWaves.addAll(this.soundWaves);
         return mergeSound;
@@ -44,8 +48,9 @@ public class MergeSound {
     }
 
     public void clear() {
-        this.kinds.clear();
         this.energy = 0;
+        this.pitchSet.clear();
+        this.timbreSet.clear();
         this.positions.clear();
         this.soundWaves.clear();
     }

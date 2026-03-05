@@ -105,17 +105,18 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
      * 配方序列化器
      */
     public static class Serializer implements RecipeSerializer<SoundReactorRecipe> {
-            private static void writeOptionalInteger(RegistryFriendlyByteBuf buf, @Nullable Integer value) {
-                buf.writeBoolean(value != null);
-                if (value != null) {
-                    buf.writeInt(value);
-                }
+        private static void writeOptionalInteger(RegistryFriendlyByteBuf buf, @Nullable Integer value) {
+            buf.writeBoolean(value != null);
+            if (value != null) {
+                buf.writeInt(value);
             }
-    
-            private static @Nullable Integer readOptionalInteger(RegistryFriendlyByteBuf buf) {
-                boolean present = buf.readBoolean();
-                return present ? buf.readInt() : null;
-            }
+        }
+
+        private static @Nullable Integer readOptionalInteger(RegistryFriendlyByteBuf buf) {
+            boolean present = buf.readBoolean();
+            return present ? buf.readInt() : null;
+        }
+
         private static final MapCodec<SoundReactorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundReactorRecipe::getInput),
             ItemStack.CODEC.fieldOf("result").forGetter(SoundReactorRecipe::getResult),
@@ -124,16 +125,17 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
             Codec.INT.optionalFieldOf("minSourceNum").forGetter(recipe -> Optional.ofNullable(recipe.minSourceNum)),
             Codec.INT.optionalFieldOf("maxSourceNum").forGetter(recipe -> Optional.ofNullable(recipe.maxSourceNum)),
             Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundReactorRecipe::getPriority)
-        ).apply(instance, (input, result, minEnergyOpt, maxEnergyOpt, minSourceNumOpt, maxSourceNumOpt, priority) -> 
-            new SoundReactorRecipe(
-                input,
-                result,
-                minEnergyOpt.orElse(null),
-                maxEnergyOpt.orElse(null),
-                minSourceNumOpt.orElse(null),
-                maxSourceNumOpt.orElse(null),
-                priority
-            )
+        ).apply(
+            instance, (input, result, minEnergyOpt, maxEnergyOpt, minSourceNumOpt, maxSourceNumOpt, priority) ->
+                new SoundReactorRecipe(
+                    input,
+                    result,
+                    minEnergyOpt.orElse(null),
+                    maxEnergyOpt.orElse(null),
+                    minSourceNumOpt.orElse(null),
+                    maxSourceNumOpt.orElse(null),
+                    priority
+                )
         ));
 
         private static final StreamCodec<RegistryFriendlyByteBuf, SoundReactorRecipe> STREAM_CODEC = StreamCodec.of(
@@ -220,8 +222,6 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         public Builder result(Item result) {
             return result(result, 1);
         }
-
-        
 
         public Builder priority(int priority) {
             this.priority = priority;

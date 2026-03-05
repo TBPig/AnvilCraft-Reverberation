@@ -7,14 +7,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum SoundKind {
+public enum Pitch {
     DEFAULT,
     ROYAL,
     EMBER,
     FROST,
     TRANSCENDENCE;
 
-    final static Map<Block, SoundKind> anvilToKind = new HashMap<>();
+    final static Map<Block, Pitch> anvilToKind = new HashMap<>();
 
     static {
         anvilToKind.put(ModBlocks.ROYAL_ANVIL.get(), ROYAL);
@@ -22,15 +22,15 @@ public enum SoundKind {
         anvilToKind.put(ModBlocks.TRANSCENDENCE_ANVIL.get(), TRANSCENDENCE);
     }
 
-    public static SoundKind getInstance(Block block) {
+    public static Pitch getInstance(Block block) {
         return anvilToKind.getOrDefault(block, DEFAULT);
     }
 
-    public static SoundKind getInstance(BlockState blockState) {
+    public static Pitch getInstance(BlockState blockState) {
         return anvilToKind.getOrDefault(blockState.getBlock(), DEFAULT);
     }
 
-    public boolean equals(SoundKind other) {
+    public boolean equals(Pitch other) {
         if (this == DEFAULT || other == DEFAULT) return true;
         return this == other;
     }
