@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 合并的音波；附带了存储功能。
@@ -34,6 +35,7 @@ public class MergeSoundStore extends MergeSound {
         MergeSound lastSound = soundHistory.getLast();
         int currentEnergy = lastSound.getEnergy();
         int currentSourceNum = lastSound.getSourceNum();
+        Set<Timbre> currentTimbres = lastSound.getTimbreSet();
 
         // 检查能量范围
         if (recipe.getMinEnergy() != null && currentEnergy < recipe.getMinEnergy()) {
@@ -49,6 +51,20 @@ public class MergeSoundStore extends MergeSound {
         }
         if (recipe.getMaxSourceNum() != null && currentSourceNum > recipe.getMaxSourceNum()) {
             return false;
+        }
+
+        // 检查必需音色是否存在
+        for (Timbre requiredTimbre : recipe.getRequiredTimbres()) {
+            boolean found = false;
+            for (Timbre currentTimbre : currentTimbres) {
+                if (currentTimbre.satisfy(requiredTimbre)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
         }
 
         return true;

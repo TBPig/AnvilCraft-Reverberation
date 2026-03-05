@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.anvilcraft.lib.recipe.component.ItemIngredientPredicate;
 import dev.anvilcraft.reverberation.AnvilCraftReverberation;
+import dev.anvilcraft.reverberation.api.Timbre;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import lombok.Getter;
 import net.minecraft.advancements.Advancement;
@@ -29,9 +30,12 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,6 +51,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
     private final Integer minSourceNum;
     @Nullable
     private final Integer maxSourceNum;
+    private final List<Timbre> requiredTimbres;
     private final int priority;
 
     public SoundReactorRecipe(
@@ -56,6 +61,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         @Nullable Integer maxEnergy,
         @Nullable Integer minSourceNum,
         @Nullable Integer maxSourceNum,
+        List<Timbre> requiredTimbres,
         int priority
     ) {
         this.input = input;
@@ -64,6 +70,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         this.maxEnergy = maxEnergy;
         this.minSourceNum = minSourceNum;
         this.maxSourceNum = maxSourceNum;
+        this.requiredTimbres = requiredTimbres;
         this.priority = priority;
     }
 
@@ -124,9 +131,10 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
             Codec.INT.optionalFieldOf("maxEnergy").forGetter(recipe -> Optional.ofNullable(recipe.maxEnergy)),
             Codec.INT.optionalFieldOf("minSourceNum").forGetter(recipe -> Optional.ofNullable(recipe.minSourceNum)),
             Codec.INT.optionalFieldOf("maxSourceNum").forGetter(recipe -> Optional.ofNullable(recipe.maxSourceNum)),
+            BuiltInRegistries.BLOCK.byNameCodec().listOf().optionalFieldOf("requiredTimbres").forGetter(recipe -> Optional.ofNullable(recipe.requiredTimbres.stream().map(Timbre::block).toList())),
             Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundReactorRecipe::getPriority)
         ).apply(
-            instance, (input, result, minEnergyOpt, maxEnergyOpt, minSourceNumOpt, maxSourceNumOpt, priority) ->
+            instance, (input, result, minEnergyOpt, maxEnergyOpt, minSourceNumOpt, maxSourceNumOpt, requiredBlocksOpt, priority) ->
                 new SoundReactorRecipe(
                     input,
                     result,
@@ -134,6 +142,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
                     maxEnergyOpt.orElse(null),
                     minSourceNumOpt.orElse(null),
                     maxSourceNumOpt.orElse(null),
+                    requiredBlocksOpt.orElse(new ArrayList<>()).stream().map(Timbre::new).toList(),
                     priority
                 )
         ));
@@ -146,18 +155,38 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
                 writeOptionalInteger(buf, recipe.getMaxEnergy());
                 writeOptionalInteger(buf, recipe.getMinSourceNum());
                 writeOptionalInteger(buf, recipe.getMaxSourceNum());
+                writeTimbres(buf, recipe);
                 buf.writeInt(recipe.getPriority());
             },
-            (buf) -> new SoundReactorRecipe(
-                ItemIngredientPredicate.STREAM_CODEC.decode(buf),
-                ItemStack.STREAM_CODEC.decode(buf),
-                readOptionalInteger(buf),
-                readOptionalInteger(buf),
-                readOptionalInteger(buf),
-                readOptionalInteger(buf),
-                buf.readInt()
-            )
+            (buf) -> {
+                return new SoundReactorRecipe(
+                    ItemIngredientPredicate.STREAM_CODEC.decode(buf),
+                    ItemStack.STREAM_CODEC.decode(buf),
+                    readOptionalInteger(buf),
+                    readOptionalInteger(buf),
+                    readOptionalInteger(buf),
+                    readOptionalInteger(buf),
+                    readTimbres(buf),
+                    buf.readInt()
+                );
+            }
         );
+
+        private static void writeTimbres(RegistryFriendlyByteBuf buf, SoundReactorRecipe recipe) {
+            buf.writeVarInt(recipe.getRequiredTimbres().size());
+            for (Timbre timbre : recipe.getRequiredTimbres()) {
+                Timbre.STREAM_CODEC.encode(buf, timbre);
+            }
+        }
+
+        public static List<Timbre> readTimbres(RegistryFriendlyByteBuf buf) {
+            List<Timbre> requiredTimbres = new ArrayList<>();
+            int size = buf.readVarInt();
+            for (int i = 0; i < size; i++) {
+                requiredTimbres.add(Timbre.STREAM_CODEC.decode(buf));
+            }
+            return requiredTimbres;
+        }
 
         @Override
         public MapCodec<SoundReactorRecipe> codec() {
@@ -181,6 +210,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         private Integer minSourceNum;
         @Nullable
         private Integer maxSourceNum;
+        private List<Timbre> requiredTimbres = new ArrayList<>();
         private int priority = 0;
         protected final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
 
@@ -248,6 +278,16 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
             return this;
         }
 
+        public Builder requiresTimbre(Timbre timbre) {
+            this.requiredTimbres.add(timbre);
+            return this;
+        }
+
+        public Builder requiresTimbre(Block block) {
+            this.requiredTimbres.add(new Timbre(block));
+            return this;
+        }
+
         @Override
         public Item getResult() {
             return result == null ? Items.AIR : result.getItem();
@@ -275,6 +315,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
                 maxEnergy,
                 minSourceNum,
                 maxSourceNum,
+                requiredTimbres,
                 priority
             );
             recipeOutput.accept(id, recipe, advancement.build(id.withPrefix("recipes/")));
