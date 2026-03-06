@@ -6,6 +6,14 @@
   },
   "minEnergy": 10,
   "priority": 0,
+  "requiredTimbres": [
+    {
+      "block": "minecraft:iron_block"
+    },
+    {
+      "block": "anvilcraft:bronze_block"
+    }
+  ],
   "result": {
     "count": 1,
     "id": "anvilcraft_reverberation:acoustic_component"

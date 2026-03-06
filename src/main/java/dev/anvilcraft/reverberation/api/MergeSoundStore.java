@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 合并的音波；附带了存储功能。
+ * 合并音波的仓库；附带了存储功能。
  * 因此可以表现旋律是否启用
  */
 public class MergeSoundStore extends MergeSound {
@@ -29,10 +29,11 @@ public class MergeSoundStore extends MergeSound {
         return soundHistory.getLast() == null ? new MergeSound() : soundHistory.getLast();
     }
 
+
     public boolean isValid(SoundReactorRecipe recipe) {
         if (soundHistory.isEmpty()) return false;
 
-        MergeSound lastSound = soundHistory.getLast();
+        MergeSound lastSound = getLastSound();
         int currentEnergy = lastSound.getEnergy();
         int currentSourceNum = lastSound.getSourceNum();
         Set<Timbre> currentTimbres = lastSound.getTimbreSet();
@@ -55,16 +56,7 @@ public class MergeSoundStore extends MergeSound {
 
         // 检查必需音色是否存在
         for (Timbre requiredTimbre : recipe.getRequiredTimbres()) {
-            boolean found = false;
-            for (Timbre currentTimbre : currentTimbres) {
-                if (currentTimbre.satisfy(requiredTimbre)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                return false;
-            }
+            if (!currentTimbres.contains(requiredTimbre)) return false;
         }
 
         return true;
