@@ -59,6 +59,11 @@ public class MergeSoundStore extends MergeSound {
             if (!currentTimbres.contains(requiredTimbre)) return false;
         }
 
+        // 检查旋律条件是否满足
+        if (recipe.getRequiredMelody() != null && !recipe.getRequiredMelody().satisfy(this)) {
+            return false;
+        }
+
         return true;
     }
 }

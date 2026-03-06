@@ -1,8 +1,12 @@
-package dev.anvilcraft.reverberation.api.melody;
+package dev.anvilcraft.reverberation.melody;
 
+import dev.anvilcraft.reverberation.AnvilCraftReverberation;
+import dev.anvilcraft.reverberation.api.Melody;
 import dev.anvilcraft.reverberation.api.MergeSound;
 import dev.anvilcraft.reverberation.api.MergeSoundStore;
 import dev.anvilcraft.reverberation.api.SoundWave;
+import dev.dubhe.anvilcraft.init.block.ModBlocks;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
 import java.util.List;
@@ -19,13 +23,17 @@ public class AblationMelody extends Melody {
         int emberEnergy = 0;
         for (SoundWave soundWave : soundWaves) {
             Block block = soundWave.timbre().block();
-            // TODO: 根据需要定义霜冻和余烬对应的方块
-            // if (block == ModBlocks.FROST_ANVIL) {
-            //     frostEnergy += soundWave.loudness();
-            // } else if (block == ModBlocks.EMBER_ANVIL) {
-            //     emberEnergy += soundWave.loudness();
-            // }
+             if (block.equals(ModBlocks.FROST_ANVIL.get())) {
+                 frostEnergy += soundWave.loudness();
+             } else if (block.equals(ModBlocks.EMBER_ANVIL.get())) {
+                 emberEnergy += soundWave.loudness();
+             }
         }
         return frostEnergy == emberEnergy;
+    }
+    
+    @Override
+    public ResourceLocation getId() {
+        return AnvilCraftReverberation.of("ablation");
     }
 }

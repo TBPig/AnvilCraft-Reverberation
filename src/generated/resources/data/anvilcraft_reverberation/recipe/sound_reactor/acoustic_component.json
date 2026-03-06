@@ -6,6 +6,7 @@
   },
   "minEnergy": 10,
   "priority": 0,
+  "requiredMelody": "anvilcraft_reverberation:equal",
   "requiredTimbres": [
     {
       "block": "minecraft:iron_block"

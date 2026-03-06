@@ -1,11 +1,15 @@
-package dev.anvilcraft.reverberation.api.melody;
+package dev.anvilcraft.reverberation.melody;
 
+import dev.anvilcraft.reverberation.AnvilCraftReverberation;
+import dev.anvilcraft.reverberation.api.Melody;
 import dev.anvilcraft.reverberation.api.MergeSound;
 import dev.anvilcraft.reverberation.api.MergeSoundStore;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
-public class LowerMelody extends Melody  {
+public class EqualMelody extends Melody {
+
     @Override
     public boolean satisfy(MergeSoundStore mergeSoundStore) {
         List<MergeSound> soundHistory = mergeSoundStore.getSoundHistory();
@@ -13,6 +17,11 @@ public class LowerMelody extends Melody  {
 
         MergeSound sound1 = soundHistory.getLast();
         MergeSound sound2 = soundHistory.get(soundHistory.size() - 2);
-        return sound1.getEnergy() * 2 <= sound2.getEnergy();
+        return sound1.getEnergy() == sound2.getEnergy();
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return AnvilCraftReverberation.of("equal");
     }
 }

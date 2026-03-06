@@ -1,6 +1,6 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package dev.anvilcraft.reverberation.api.melody;
+package dev.anvilcraft.reverberation.melody;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

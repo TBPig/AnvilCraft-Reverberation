@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.anvilcraft.lib.recipe.component.ItemIngredientPredicate;
 import dev.anvilcraft.reverberation.AnvilCraftReverberation;
 import dev.anvilcraft.reverberation.api.Timbre;
+import dev.anvilcraft.reverberation.api.Melody;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import lombok.Getter;
 import net.minecraft.advancements.Advancement;
@@ -52,6 +53,8 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
     @Nullable
     private final Integer maxSourceNum;
     private final List<Timbre> requiredTimbres;
+    @Nullable
+    private final Melody requiredMelody;
     private final int priority;
 
     public SoundReactorRecipe(
@@ -62,6 +65,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         @Nullable Integer minSourceNum,
         @Nullable Integer maxSourceNum,
         List<Timbre> requiredTimbres,
+        @Nullable Melody requiredMelody,
         int priority
     ) {
         this.input = input;
@@ -71,6 +75,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         this.minSourceNum = minSourceNum;
         this.maxSourceNum = maxSourceNum;
         this.requiredTimbres = requiredTimbres;
+        this.requiredMelody = requiredMelody;
         this.priority = priority;
     }
 
@@ -132,9 +137,10 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
             Codec.INT.optionalFieldOf("minSourceNum").forGetter(recipe -> Optional.ofNullable(recipe.minSourceNum)),
             Codec.INT.optionalFieldOf("maxSourceNum").forGetter(recipe -> Optional.ofNullable(recipe.maxSourceNum)),
             Timbre.CODEC.listOf().optionalFieldOf("requiredTimbres").forGetter(recipe -> Optional.ofNullable(recipe.requiredTimbres)),
+            Melody.CODEC.optionalFieldOf("requiredMelody").forGetter(recipe -> Optional.ofNullable(recipe.requiredMelody)),
             Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundReactorRecipe::getPriority)
         ).apply(
-            instance, (input, result, minEnergyOpt, maxEnergyOpt, minSourceNumOpt, maxSourceNumOpt, requiredBlocksOpt, priority) ->
+            instance, (input, result, minEnergyOpt, maxEnergyOpt, minSourceNumOpt, maxSourceNumOpt, requiredTimbresOpt, requiredMelodyOpt, priority) ->
                 new SoundReactorRecipe(
                     input,
                     result,
@@ -142,7 +148,8 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
                     maxEnergyOpt.orElse(null),
                     minSourceNumOpt.orElse(null),
                     maxSourceNumOpt.orElse(null),
-                    requiredBlocksOpt.orElse(new ArrayList<>()),
+                    requiredTimbresOpt.orElse(new ArrayList<>()),
+                    requiredMelodyOpt.orElse(null),
                     priority
                 )
         ));
@@ -156,6 +163,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
                 writeOptionalInteger(buf, recipe.getMinSourceNum());
                 writeOptionalInteger(buf, recipe.getMaxSourceNum());
                 writeTimbres(buf, recipe);
+                writeMelody(buf, recipe);
                 buf.writeInt(recipe.getPriority());
             },
             (buf) -> new SoundReactorRecipe(
@@ -166,9 +174,22 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
                 readOptionalInteger(buf),
                 readOptionalInteger(buf),
                 readTimbres(buf),
+                readMelody(buf),
                 buf.readInt()
             )
         );
+        
+        private static void writeMelody(RegistryFriendlyByteBuf buf, SoundReactorRecipe recipe) {
+            buf.writeBoolean(recipe.getRequiredMelody() != null);
+            if (recipe.getRequiredMelody() != null) {
+                Melody.STREAM_CODEC.encode(buf, recipe.getRequiredMelody());
+            }
+        }
+        
+        public static @Nullable Melody readMelody(RegistryFriendlyByteBuf buf) {
+            boolean present = buf.readBoolean();
+            return present ? Melody.STREAM_CODEC.decode(buf) : null;
+        }
 
         private static void writeTimbres(RegistryFriendlyByteBuf buf, SoundReactorRecipe recipe) {
             buf.writeVarInt(recipe.getRequiredTimbres().size());
@@ -210,6 +231,8 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
         @Nullable
         private Integer maxSourceNum;
         private final List<Timbre> requiredTimbres = new ArrayList<>();
+        @Nullable
+        private Melody requiredMelody;
         private int priority = 0;
         protected final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
 
@@ -287,6 +310,11 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
             return this;
         }
 
+        public Builder requiresMelody(Melody melody) {
+            this.requiredMelody = melody;
+            return this;
+        }
+
         @Override
         public Item getResult() {
             return result == null ? Items.AIR : result.getItem();
@@ -315,6 +343,7 @@ public class SoundReactorRecipe implements Recipe<RecipeInput> {
                 minSourceNum,
                 maxSourceNum,
                 requiredTimbres,
+                requiredMelody,
                 priority
             );
             recipeOutput.accept(id, recipe, advancement.build(id.withPrefix("recipes/")));
