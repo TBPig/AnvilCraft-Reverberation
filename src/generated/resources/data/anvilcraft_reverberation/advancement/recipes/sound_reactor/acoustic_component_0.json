@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "anvilcraft_reverberation:sound_reactor/acoustic_component"
+        "recipe": "anvilcraft_reverberation:sound_reactor/acoustic_component_0"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -15,7 +15,7 @@
   ],
   "rewards": {
     "recipes": [
-      "anvilcraft_reverberation:sound_reactor/acoustic_component"
+      "anvilcraft_reverberation:sound_reactor/acoustic_component_0"
     ]
   }
 }

@@ -4,7 +4,7 @@ import dev.anvilcraft.reverberation.api.ISoundReceiver;
 import dev.anvilcraft.reverberation.api.MergeSound;
 import dev.anvilcraft.reverberation.api.MergeSoundStore;
 import dev.anvilcraft.reverberation.api.SoundWave;
-import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +16,7 @@ public class MergeSoundPillarBlockEntity extends BlockEntity implements ISoundRe
     public static final int PERIOD = 20;
     public static final int RECEIVE_RANGE = 6;
 
+    @Getter
     private final MergeSoundStore sound;
     private int tickCount = 0;
 
@@ -53,10 +54,6 @@ public class MergeSoundPillarBlockEntity extends BlockEntity implements ISoundRe
 
     public MergeSound getMergeSound() {
         return sound.getLastSound();
-    }
-
-    public boolean isValid(SoundReactorRecipe recipe) {
-        return sound.isValid(recipe);
     }
 
     public int getAnalogOutputSignal() {

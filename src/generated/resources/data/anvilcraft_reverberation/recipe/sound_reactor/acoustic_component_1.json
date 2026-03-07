@@ -1,0 +1,19 @@
+{
+  "type": "anvilcraft_reverberation:sound_reactor_recipe",
+  "ingredient": {
+    "items": "#c:plates/bronze"
+  },
+  "priority": 1,
+  "result": {
+    "count": 1,
+    "id": "anvilcraft_reverberation:acoustic_component"
+  },
+  "sound_require": {
+    "minEnergy": 16,
+    "requiredTimbres": [
+      {
+        "block": "anvilcraft:bronze_block"
+      }
+    ]
+  }
+}

@@ -1,11 +1,9 @@
 package dev.anvilcraft.reverberation.api;
 
-import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 合并音波的仓库；附带了存储功能。
@@ -27,43 +25,5 @@ public class MergeSoundStore extends MergeSound {
 
     public MergeSound getLastSound() {
         return soundHistory.getLast() == null ? new MergeSound() : soundHistory.getLast();
-    }
-
-
-    public boolean isValid(SoundReactorRecipe recipe) {
-        if (soundHistory.isEmpty()) return false;
-
-        MergeSound lastSound = getLastSound();
-        int currentEnergy = lastSound.getEnergy();
-        int currentSourceNum = lastSound.getSourceNum();
-        Set<Timbre> currentTimbres = lastSound.getTimbreSet();
-
-        // 检查能量范围
-        if (recipe.getMinEnergy() != null && currentEnergy < recipe.getMinEnergy()) {
-            return false;
-        }
-        if (recipe.getMaxEnergy() != null && currentEnergy > recipe.getMaxEnergy()) {
-            return false;
-        }
-
-        // 检查声源数量范围
-        if (recipe.getMinSourceNum() != null && currentSourceNum < recipe.getMinSourceNum()) {
-            return false;
-        }
-        if (recipe.getMaxSourceNum() != null && currentSourceNum > recipe.getMaxSourceNum()) {
-            return false;
-        }
-
-        // 检查必需音色是否存在
-        for (Timbre requiredTimbre : recipe.getRequiredTimbres()) {
-            if (!currentTimbres.contains(requiredTimbre)) return false;
-        }
-
-        // 检查旋律条件是否满足
-        if (recipe.getRequiredMelody() != null && !recipe.getRequiredMelody().satisfy(this)) {
-            return false;
-        }
-
-        return true;
     }
 }

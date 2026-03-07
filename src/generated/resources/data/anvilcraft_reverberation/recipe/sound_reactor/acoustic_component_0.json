@@ -4,19 +4,13 @@
     "count": 2,
     "items": "#c:plates/bronze"
   },
-  "minEnergy": 10,
   "priority": 0,
-  "requiredMelody": "anvilcraft_reverberation:equal",
-  "requiredTimbres": [
-    {
-      "block": "minecraft:iron_block"
-    },
-    {
-      "block": "anvilcraft:bronze_block"
-    }
-  ],
   "result": {
     "count": 1,
     "id": "anvilcraft_reverberation:acoustic_component"
+  },
+  "sound_require": {
+    "minEnergy": 8,
+    "requiredTimbres": []
   }
 }
