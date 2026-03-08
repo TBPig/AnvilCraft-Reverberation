@@ -7,6 +7,17 @@
   "block.anvilcraft_reverberation.merge_sound_pillar": "ɹɐןןıԀ punoS ǝbɹǝW",
   "item.anvilcraft_reverberation.acoustic_component": "ʇuǝuodɯoƆ ɔıʇsnoɔⱯ",
   "itemGroup.anvilcraft_reverberation.reverberation": "uoıʇɐɹǝqɹǝʌǝᴚ :ʇɟɐɹƆןıʌuⱯ",
+  "tooltip.anvilcraft_reverberation.sound_sequence.energy": "]%d-%d[ ʎbɹǝuƎ",
+  "tooltip.anvilcraft_reverberation.sound_sequence.max_energy": "%d ʎbɹǝuƎ xɐW",
+  "tooltip.anvilcraft_reverberation.sound_sequence.max_sources": "%d sǝɔɹnoS xɐW",
+  "tooltip.anvilcraft_reverberation.sound_sequence.melody": "%s :ʎpoןǝW",
+  "tooltip.anvilcraft_reverberation.sound_sequence.min_energy": "%d ʎbɹǝuƎ uıW",
+  "tooltip.anvilcraft_reverberation.sound_sequence.min_sources": "%d sǝɔɹnoS uıW",
+  "tooltip.anvilcraft_reverberation.sound_sequence.next": "%s :ʇxǝNq§",
+  "tooltip.anvilcraft_reverberation.sound_sequence.progress": "ssǝɹboɹԀ buıɥɔʇƎ ǝɔuǝnbǝS punoS",
+  "tooltip.anvilcraft_reverberation.sound_sequence.sources": "]%d-%d[ sǝɔɹnoS",
+  "tooltip.anvilcraft_reverberation.sound_sequence.step": "%d / %d :dǝʇS8§",
+  "tooltip.anvilcraft_reverberation.sound_sequence.timbre": "%s :ǝɹqɯı⟘",
   "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "%s :ʎbɹǝuƎ punoS",
   "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num": "%s :ɯnN ǝɔɹnoS"
 }

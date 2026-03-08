@@ -7,8 +7,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,7 +15,7 @@ public record SoundRequire(
     @Nullable Integer maxEnergy,
     @Nullable Integer minSourceNum,
     @Nullable Integer maxSourceNum,
-    List<Timbre> requiredTimbres,
+    @Nullable Timbre requiredTimbre,
     @Nullable Melody requiredMelody
 ) {
     public static final Codec<SoundRequire> CODEC = RecordCodecBuilder.create(instance -> instance
@@ -26,7 +24,7 @@ public record SoundRequire(
             Codec.INT.optionalFieldOf("maxEnergy").forGetter(req -> Optional.ofNullable(req.maxEnergy)),
             Codec.INT.optionalFieldOf("minSourceNum").forGetter(req -> Optional.ofNullable(req.minSourceNum)),
             Codec.INT.optionalFieldOf("maxSourceNum").forGetter(req -> Optional.ofNullable(req.maxSourceNum)),
-            Timbre.CODEC.listOf().optionalFieldOf("requiredTimbres").forGetter(req -> Optional.ofNullable(req.requiredTimbres)),
+            Timbre.CODEC.optionalFieldOf("requiredTimbre").forGetter(req -> Optional.ofNullable(req.requiredTimbre)),
             Melody.CODEC.optionalFieldOf("requiredMelody").forGetter(req -> Optional.ofNullable(req.requiredMelody))
         )
         .apply(
@@ -35,7 +33,7 @@ public record SoundRequire(
                 maxEnergy.orElse(null),
                 minSourceNum.orElse(null),
                 maxSourceNum.orElse(null),
-                requiredTimbres.orElse(new ArrayList<>()),
+                requiredTimbres.orElse(null),
                 requiredMelody.orElse(null)
             )
         )
@@ -47,7 +45,7 @@ public record SoundRequire(
             writeOptionalInteger(buf, req.maxEnergy());
             writeOptionalInteger(buf, req.minSourceNum());
             writeOptionalInteger(buf, req.maxSourceNum());
-            writeTimbres(buf, req);
+            writeTimbre(buf, req);
             writeMelody(buf, req);
         },
         (buf) -> {
@@ -55,10 +53,10 @@ public record SoundRequire(
             Integer maxEnergy = readOptionalInteger(buf);
             Integer minSourceNum = readOptionalInteger(buf);
             Integer maxSourceNum = readOptionalInteger(buf);
-            List<Timbre> requiredTimbres = readTimbres(buf);
+            Timbre requiredTimbre = readTimbre(buf);
             Melody requiredMelody = readMelody(buf);
 
-            return new SoundRequire(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbres, requiredMelody);
+            return new SoundRequire(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbre, requiredMelody);
         }
     );
 
@@ -80,18 +78,15 @@ public record SoundRequire(
         if (maxEnergy != null && currentEnergy > maxEnergy) {
             return false;
         }
-
         if (minSourceNum != null && currentSourceNum < minSourceNum) {
             return false;
         }
         if (maxSourceNum != null && currentSourceNum > maxSourceNum) {
             return false;
         }
-
-        for (Timbre requiredTimbre : requiredTimbres) {
-            if (!currentTimbres.contains(requiredTimbre)) return false;
+        if (requiredTimbre != null && !currentTimbres.contains(requiredTimbre)) {
+            return false;
         }
-
         if (requiredMelody != null && !requiredMelody.satisfy(soundStore)) {
             return false;
         }
@@ -123,20 +118,16 @@ public record SoundRequire(
         return present ? Melody.STREAM_CODEC.decode(buf) : null;
     }
 
-    private static void writeTimbres(RegistryFriendlyByteBuf buf, SoundRequire req) {
-        buf.writeVarInt(req.requiredTimbres().size());
-        for (Timbre timbre : req.requiredTimbres()) {
-            Timbre.STREAM_CODEC.encode(buf, timbre);
+    private static void writeTimbre(RegistryFriendlyByteBuf buf, SoundRequire req) {
+        buf.writeBoolean(req.requiredTimbre != null);
+        if (req.requiredTimbre != null) {
+            Timbre.STREAM_CODEC.encode(buf, req.requiredTimbre());
         }
     }
 
-    public static List<Timbre> readTimbres(RegistryFriendlyByteBuf buf) {
-        List<Timbre> requiredTimbres = new ArrayList<>();
-        int size = buf.readVarInt();
-        for (int i = 0; i < size; i++) {
-            requiredTimbres.add(Timbre.STREAM_CODEC.decode(buf));
-        }
-        return requiredTimbres;
+    public static @Nullable Timbre readTimbre(RegistryFriendlyByteBuf buf) {
+        boolean present = buf.readBoolean();
+        return present ? Timbre.STREAM_CODEC.decode(buf) : null;
     }
 
     public static Builder builder() {
@@ -145,17 +136,12 @@ public record SoundRequire(
 
     @SuppressWarnings("unused")
     public static class Builder {
-        @Nullable
-        private Integer minEnergy;
-        @Nullable
-        private Integer maxEnergy;
-        @Nullable
-        private Integer minSourceNum;
-        @Nullable
-        private Integer maxSourceNum;
-        private final List<Timbre> requiredTimbres = new ArrayList<>();
-        @Nullable
-        private Melody requiredMelody;
+        private @Nullable Integer minEnergy;
+        private @Nullable Integer maxEnergy;
+        private @Nullable Integer minSourceNum;
+        private @Nullable Integer maxSourceNum;
+        private @Nullable Timbre requiredTimbre;
+        private @Nullable Melody requiredMelody;
 
         public Builder minEnergy(Integer min) {
             this.minEnergy = min;
@@ -190,11 +176,12 @@ public record SoundRequire(
         }
 
         public Builder timbre(Timbre timbre) {
-            this.requiredTimbres.add(timbre);
+            this.requiredTimbre = timbre;
             return this;
         }
+
         public Builder timbre(Block block) {
-            this.requiredTimbres.add(Timbre.of(block));
+            this.requiredTimbre = Timbre.of(block);
             return this;
         }
 
@@ -204,7 +191,7 @@ public record SoundRequire(
         }
 
         public SoundRequire build() {
-            return new SoundRequire(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbres, requiredMelody);
+            return new SoundRequire(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbre, requiredMelody);
         }
     }
 }

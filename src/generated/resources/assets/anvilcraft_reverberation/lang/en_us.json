@@ -7,6 +7,17 @@
   "block.anvilcraft_reverberation.merge_sound_pillar": "Merge Sound Pillar",
   "item.anvilcraft_reverberation.acoustic_component": "Acoustic Component",
   "itemGroup.anvilcraft_reverberation.reverberation": "AnvilCraft: Reverberation",
+  "tooltip.anvilcraft_reverberation.sound_sequence.energy": "Energy [%d-%d]",
+  "tooltip.anvilcraft_reverberation.sound_sequence.max_energy": "Max Energy %d",
+  "tooltip.anvilcraft_reverberation.sound_sequence.max_sources": "Max Sources %d",
+  "tooltip.anvilcraft_reverberation.sound_sequence.melody": "Melody: %s",
+  "tooltip.anvilcraft_reverberation.sound_sequence.min_energy": "Min Energy %d",
+  "tooltip.anvilcraft_reverberation.sound_sequence.min_sources": "Min Sources %d",
+  "tooltip.anvilcraft_reverberation.sound_sequence.next": "§bNext: %s",
+  "tooltip.anvilcraft_reverberation.sound_sequence.progress": "Sound Sequence Etching Progress",
+  "tooltip.anvilcraft_reverberation.sound_sequence.sources": "Sources [%d-%d]",
+  "tooltip.anvilcraft_reverberation.sound_sequence.step": "§8Step: %d / %d",
+  "tooltip.anvilcraft_reverberation.sound_sequence.timbre": "Timbre: %s",
   "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "Sound Energy: %s",
   "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num": "Source Num: %s"
 }

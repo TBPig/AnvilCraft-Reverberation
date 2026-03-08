@@ -10,14 +10,14 @@ import java.util.List;
  * 因此可以表现旋律是否启用
  */
 public class MergeSoundStore extends MergeSound {
-    public static final int DEFAULT_CAPACITY = 8;
+    public static final int DEFAULT_CAPACITY = 4;
 
     @Getter
     private final List<MergeSound> soundHistory = new ArrayList<>(DEFAULT_CAPACITY);
 
     public void store() {
         soundHistory.add(super.copy());
-        if (soundHistory.size() > DEFAULT_CAPACITY) {
+        while (soundHistory.size() > DEFAULT_CAPACITY) {
             soundHistory.removeFirst();
         }
         this.clear();

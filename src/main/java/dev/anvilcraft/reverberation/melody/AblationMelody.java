@@ -29,7 +29,7 @@ public class AblationMelody extends Melody {
                  emberEnergy += soundWave.loudness();
              }
         }
-        return frostEnergy == emberEnergy;
+        return frostEnergy == emberEnergy && frostEnergy != 0;
     }
     
     @Override

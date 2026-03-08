@@ -10,10 +10,8 @@
   },
   "sound_require": {
     "minEnergy": 12,
-    "requiredTimbres": [
-      {
-        "block": "minecraft:amethyst_block"
-      }
-    ]
+    "requiredTimbre": {
+      "block": "minecraft:amethyst_block"
+    }
   }
 }

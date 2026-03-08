@@ -9,10 +9,8 @@
     "id": "anvilcraft_reverberation:acoustic_component"
   },
   "sound_require": {
-    "requiredTimbres": [
-      {
-        "block": "minecraft:budding_amethyst"
-      }
-    ]
+    "requiredTimbre": {
+      "block": "minecraft:budding_amethyst"
+    }
   }
 }

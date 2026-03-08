@@ -1,5 +1,5 @@
 {
-  "type": "anvilcraft_reverberation:sound_sequence_reactor_recipe",
+  "type": "anvilcraft_reverberation:sound_sequence_etching_recipe",
   "ingredient": {
     "items": "minecraft:iron_ingot"
   },
@@ -7,7 +7,7 @@
     "count": 1,
     "id": "minecraft:copper_ingot"
   },
-  "loops": 1,
+  "loops": 2,
   "priority": 100,
   "result": {
     "count": 1,
@@ -15,14 +15,15 @@
   },
   "steps": [
     {
-      "maxEnergy": 10,
-      "minEnergy": 3,
-      "requiredTimbres": []
+      "minEnergy": 3
     },
     {
       "maxEnergy": 6,
       "minEnergy": 4,
-      "requiredTimbres": []
+      "requiredMelody": "anvilcraft_reverberation:equal",
+      "requiredTimbre": {
+        "block": "minecraft:budding_amethyst"
+      }
     }
   ]
 }

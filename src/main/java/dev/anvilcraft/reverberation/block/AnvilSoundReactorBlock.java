@@ -2,7 +2,7 @@ package dev.anvilcraft.reverberation.block;
 
 import dev.anvilcraft.reverberation.block.entity.MergeSoundPillarBlockEntity;
 import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
-import dev.anvilcraft.reverberation.recipe.SoundSequenceReactorRecipe;
+import dev.anvilcraft.reverberation.recipe.SoundSequenceEtchingRecipe;
 import dev.dubhe.anvilcraft.api.hammer.IHammerRemovable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,10 +30,7 @@ import java.util.Optional;
 public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-    public static final VoxelShape INSIDE = Shapes.or(
-        box(2.0, 12.0, 2.0, 14.0, 16.0, 14.0),
-        box(6, 13, 14, 10, 16, 16)
-    );
+    public static final VoxelShape INSIDE = box(2.0, 12.0, 2.0, 14.0, 16.0, 14.0);
     public static final VoxelShape SHAPE = Shapes.join(Shapes.block(), INSIDE, BooleanOp.ONLY_FIRST);
 
     public AnvilSoundReactorBlock(Properties properties) {
@@ -70,8 +67,8 @@ public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
         for (ItemEntity entity : itemEntities) {
             ItemStack entityStack = entity.getItem();
 
-            Optional<RecipeHolder<SoundSequenceReactorRecipe>> sequenceOpt =
-                SoundSequenceReactorRecipe.getRecipe(level, entityStack, pillar.getSound());
+            Optional<RecipeHolder<SoundSequenceEtchingRecipe>> sequenceOpt =
+                SoundSequenceEtchingRecipe.getRecipe(level, entityStack, pillar.getSound());
 
             Optional<RecipeHolder<SoundReactorRecipe>> simpleOpt =
                 SoundReactorRecipe.getRecipe(level, entityStack, pillar.getSound());
@@ -89,8 +86,8 @@ public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
 
             if (flag == 1) {
                 // 处理序列配方
-                RecipeHolder<SoundSequenceReactorRecipe> holder = sequenceOpt.get();
-                ItemStack output = SoundSequenceReactorRecipe.getOutput(holder, entityStack, holder.value());
+                RecipeHolder<SoundSequenceEtchingRecipe> holder = sequenceOpt.get();
+                ItemStack output = SoundSequenceEtchingRecipe.getOutput(holder, entityStack, holder.value());
                 transItem(level, output, spawnPos, entityStack);
             } else if (flag == 0) {
                 // 处理简单配方

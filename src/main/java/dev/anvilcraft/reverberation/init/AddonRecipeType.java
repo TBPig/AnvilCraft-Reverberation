@@ -2,7 +2,7 @@ package dev.anvilcraft.reverberation.init;
 
 import dev.anvilcraft.reverberation.AnvilCraftReverberation;
 import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
-import dev.anvilcraft.reverberation.recipe.SoundSequenceReactorRecipe;
+import dev.anvilcraft.reverberation.recipe.SoundSequenceEtchingRecipe;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -22,10 +22,10 @@ public class AddonRecipeType {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SoundReactorRecipe>> SOUND_REACTOR_SERIALIZER =
         RECIPE_SERIALIZERS.register("sound_reactor_recipe", SoundReactorRecipe.Serializer::new);
 
-    public static final DeferredHolder<RecipeType<?>, RecipeType<SoundSequenceReactorRecipe>> SOUND_SEQUENCE_REACTOR_TYPE =
-        registerType("sound_sequence_reactor_recipe");
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SoundSequenceReactorRecipe>> SOUND_SEQUENCE_REACTOR_SERIALIZER =
-        RECIPE_SERIALIZERS.register("sound_sequence_reactor_recipe", SoundSequenceReactorRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeType<?>, RecipeType<SoundSequenceEtchingRecipe>> SOUND_SEQUENCE_ETCHING_TYPE =
+        registerType("sound_sequence_etching_recipe");
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SoundSequenceEtchingRecipe>> SOUND_SEQUENCE_ETCHING_SERIALIZER =
+        RECIPE_SERIALIZERS.register("sound_sequence_etching_recipe", SoundSequenceEtchingRecipe.Serializer::new);
 
     private static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> registerType(String name) {
         return RECIPE_TYPES.register(

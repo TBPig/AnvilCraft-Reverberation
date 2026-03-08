@@ -15,11 +15,13 @@ import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -33,6 +35,9 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -41,12 +46,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * 音序蚀刻配方 - 需要按顺序完成多个砧音催化步骤的配方
  */
-public record SoundSequenceReactorRecipe(
+public record SoundSequenceEtchingRecipe(
     ItemIngredientPredicate ingredient,
     ItemStack intermediate,
     ItemStack result,
@@ -77,28 +81,28 @@ public record SoundSequenceReactorRecipe(
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return AddonRecipeType.SOUND_SEQUENCE_REACTOR_SERIALIZER.get();
+        return AddonRecipeType.SOUND_SEQUENCE_ETCHING_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return AddonRecipeType.SOUND_SEQUENCE_REACTOR_TYPE.get();
+        return AddonRecipeType.SOUND_SEQUENCE_ETCHING_TYPE.get();
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public static Stream<RecipeHolder<SoundSequenceReactorRecipe>> getRecipes(
+    public static Optional<RecipeHolder<SoundSequenceEtchingRecipe>> getRecipe(
         Level level,
         ItemStack input,
         MergeSoundStore mergeSoundStore
     ) {
         return level.getRecipeManager()
-            .getAllRecipesFor(AddonRecipeType.SOUND_SEQUENCE_REACTOR_TYPE.get())
+            .getAllRecipesFor(AddonRecipeType.SOUND_SEQUENCE_ETCHING_TYPE.get())
             .stream()
             .filter(holder -> {
-                SoundSequenceReactorRecipe recipe = holder.value();
+                SoundSequenceEtchingRecipe recipe = holder.value();
                 // 检查是否匹配中间产物或初始物品
                 if (input.has(AddonDataComponents.SOUND_SEQUENCE.get())) {
                     SoundSequenceData data = input.get(AddonDataComponents.SOUND_SEQUENCE.get());
@@ -106,15 +110,25 @@ public record SoundSequenceReactorRecipe(
                 } else {
                     return recipe.ingredient.test(input) && recipe.canStart(mergeSoundStore);
                 }
-            });
+            })
+            .max(Comparator.comparingInt(r -> r.value().priority()));
     }
 
-    public static Optional<RecipeHolder<SoundSequenceReactorRecipe>> getRecipe(
+    public static Optional<RecipeHolder<SoundSequenceEtchingRecipe>> getRecipe(
         Level level,
-        ItemStack input,
-        MergeSoundStore mergeSoundStore
+        ItemStack input
     ) {
-        return getRecipes(level, input, mergeSoundStore)
+        return level.getRecipeManager()
+            .getAllRecipesFor(AddonRecipeType.SOUND_SEQUENCE_ETCHING_TYPE.get())
+            .stream()
+            .filter(holder -> {
+                if (input.has(AddonDataComponents.SOUND_SEQUENCE.get())) {
+                    SoundSequenceData data = input.get(AddonDataComponents.SOUND_SEQUENCE.get());
+                    return data.id().equals(holder.id());
+                } else {
+                    return false;
+                }
+            })
             .max(Comparator.comparingInt(r -> r.value().priority()));
     }
 
@@ -130,18 +144,18 @@ public record SoundSequenceReactorRecipe(
     }
 
     public static ItemStack getOutput(
-        RecipeHolder<SoundSequenceReactorRecipe> holder,
+        RecipeHolder<SoundSequenceEtchingRecipe> holder,
         ItemStack input,
-        SoundSequenceReactorRecipe recipe
+        SoundSequenceEtchingRecipe recipe
     ) {
         ItemStack output;
         int currentStep = getCurrentStep(input);
-        if (currentStep >= recipe.steps().size() * recipe.loops()) {
+        if (currentStep >= recipe.allStepNum()) {
             // 完成所有步骤，生成最终产物
             return recipe.result().copy();
         } else {
             // 生成带有进度数据的过渡物品
-            float progress = (float) currentStep / (recipe.steps().size() * recipe.loops());
+            float progress = (float) currentStep / recipe.allStepNum();
             SoundSequenceData newData = new SoundSequenceData(
                 holder.id(),
                 currentStep,
@@ -154,6 +168,10 @@ public record SoundSequenceReactorRecipe(
         }
     }
 
+    private int allStepNum() {
+        return steps.size() * loops();
+    }
+
     private static int getCurrentStep(ItemStack input) {
         if (input.has(AddonDataComponents.SOUND_SEQUENCE.get())) {
             SoundSequenceData data = input.get(AddonDataComponents.SOUND_SEQUENCE.get());
@@ -164,26 +182,137 @@ public record SoundSequenceReactorRecipe(
         return 1;
     }
 
-    public static class Serializer implements RecipeSerializer<SoundSequenceReactorRecipe> {
-        private static final MapCodec<SoundSequenceReactorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundSequenceReactorRecipe::ingredient),
-            ItemStack.CODEC.fieldOf("intermediate").forGetter(SoundSequenceReactorRecipe::intermediate),
-            ItemStack.CODEC.fieldOf("result").forGetter(SoundSequenceReactorRecipe::result),
-            SoundRequire.CODEC.listOf().fieldOf("steps").forGetter(SoundSequenceReactorRecipe::steps),
-            Codec.INT.fieldOf("loops").orElse(1).forGetter(SoundSequenceReactorRecipe::loops),
-            Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundSequenceReactorRecipe::priority)
-        ).apply(instance, SoundSequenceReactorRecipe::new));
 
-        private static final StreamCodec<RegistryFriendlyByteBuf, SoundSequenceReactorRecipe> STREAM_CODEC = StreamCodec.of(
+    @OnlyIn(Dist.CLIENT)
+    public static void addToTooltip(ItemTooltipEvent event) {
+        // 源代码参考自《机械动力》：https://github.com/Creators-of-Create/Create
+        ItemStack stack = event.getItemStack();
+        if (!stack.has(AddonDataComponents.SOUND_SEQUENCE.get())) {
+            return;
+        }
+
+        SoundSequenceData soundSequenceData = stack.get(AddonDataComponents.SOUND_SEQUENCE.get());
+        @SuppressWarnings({"DataFlowIssue"})
+        Optional<RecipeHolder<SoundSequenceEtchingRecipe>> optionalRecipe = getRecipe(Minecraft.getInstance().level, stack);
+
+        if (optionalRecipe.isEmpty()) return;
+
+        SoundSequenceEtchingRecipe recipe = optionalRecipe.get().value();
+
+        int length = recipe.steps().size();
+        int step = soundSequenceData.step();
+        int total = recipe.allStepNum();
+        List<Component> tooltip = event.getToolTip();
+
+        tooltip.add(Component.translatable("tooltip.anvilcraft_reverberation.sound_sequence.progress")
+            .withStyle(net.minecraft.ChatFormatting.GRAY));
+        tooltip.add(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.step",
+                step + 1, total
+            )
+            .withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+
+        int remaining = total - step;
+        for (int i = 0; i < length; i++) {
+            if (i >= remaining) {
+                break;
+            }
+            SoundRequire soundRequire = recipe.steps().get((i + step) % length);
+            Component textComponent = getStepDescription(soundRequire);
+            if (i == 0) {
+                tooltip.add(Component.translatable("tooltip.anvilcraft_reverberation.sound_sequence.next", textComponent)
+                    .withStyle(net.minecraft.ChatFormatting.AQUA));
+            } else {
+                tooltip.add(Component.literal("→ ").append(textComponent)
+                    .withStyle(net.minecraft.ChatFormatting.DARK_AQUA));
+            }
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static Component getStepDescription(SoundRequire soundRequire) {
+        StringBuilder description = new StringBuilder();
+
+        // 添加能量要求
+        if (soundRequire.minEnergy() != null && soundRequire.maxEnergy() != null) {
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.energy",
+                soundRequire.minEnergy(), soundRequire.maxEnergy()
+            ).getString());
+        } else if (soundRequire.minEnergy() != null) {
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.min_energy",
+                soundRequire.minEnergy()
+            ).getString());
+        } else if (soundRequire.maxEnergy() != null) {
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.max_energy",
+                soundRequire.maxEnergy()
+            ).getString());
+        }
+
+        // 添加声源数量要求
+        if (soundRequire.minSourceNum() != null && soundRequire.maxSourceNum() != null) {
+            if (!description.isEmpty()) description.append(", ");
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.sources",
+                soundRequire.minSourceNum(), soundRequire.maxSourceNum()
+            ).getString());
+        } else if (soundRequire.minSourceNum() != null) {
+            if (!description.isEmpty()) description.append(", ");
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.min_sources",
+                soundRequire.minSourceNum()
+            ).getString());
+        } else if (soundRequire.maxSourceNum() != null) {
+            if (!description.isEmpty()) description.append(", ");
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.max_sources",
+                soundRequire.maxSourceNum()
+            ).getString());
+        }
+
+        // 添加音色要求
+        if (soundRequire.requiredTimbre() != null) {
+            if (!description.isEmpty()) description.append(", ");
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.timbre",
+                soundRequire.requiredTimbre().block().getName()
+            ).getString());
+        }
+
+        // 添加旋律要求
+        if (soundRequire.requiredMelody() != null) {
+            if (!description.isEmpty()) description.append(", ");
+            description.append(Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_sequence.melody",
+                soundRequire.requiredMelody().getId().getPath()
+            ).getString());
+        }
+
+        return Component.literal(description.toString());
+    }
+
+    public static class Serializer implements RecipeSerializer<SoundSequenceEtchingRecipe> {
+        private static final MapCodec<SoundSequenceEtchingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundSequenceEtchingRecipe::ingredient),
+            ItemStack.CODEC.fieldOf("intermediate").forGetter(SoundSequenceEtchingRecipe::intermediate),
+            ItemStack.CODEC.fieldOf("result").forGetter(SoundSequenceEtchingRecipe::result),
+            SoundRequire.CODEC.listOf().fieldOf("steps").forGetter(SoundSequenceEtchingRecipe::steps),
+            Codec.INT.fieldOf("loops").orElse(1).forGetter(SoundSequenceEtchingRecipe::loops),
+            Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundSequenceEtchingRecipe::priority)
+        ).apply(instance, SoundSequenceEtchingRecipe::new));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, SoundSequenceEtchingRecipe> STREAM_CODEC = StreamCodec.of(
             (buf, recipe) -> {
                 ItemIngredientPredicate.STREAM_CODEC.encode(buf, recipe.ingredient());
                 ItemStack.STREAM_CODEC.encode(buf, recipe.intermediate());
                 ItemStack.STREAM_CODEC.encode(buf, recipe.result());
                 writeSteps(buf, recipe);
-                buf.writeInt(recipe.priority());
                 buf.writeInt(recipe.loops());
+                buf.writeInt(recipe.priority());
             },
-            (buf) -> new SoundSequenceReactorRecipe(
+            (buf) -> new SoundSequenceEtchingRecipe(
                 ItemIngredientPredicate.STREAM_CODEC.decode(buf),
                 ItemStack.STREAM_CODEC.decode(buf),
                 ItemStack.STREAM_CODEC.decode(buf),
@@ -202,7 +331,7 @@ public record SoundSequenceReactorRecipe(
             return steps;
         }
 
-        private static void writeSteps(RegistryFriendlyByteBuf buf, SoundSequenceReactorRecipe recipe) {
+        private static void writeSteps(RegistryFriendlyByteBuf buf, SoundSequenceEtchingRecipe recipe) {
             buf.writeVarInt(recipe.steps().size());
             for (SoundRequire step : recipe.steps()) {
                 SoundRequire.STREAM_CODEC.encode(buf, step);
@@ -210,12 +339,12 @@ public record SoundSequenceReactorRecipe(
         }
 
         @Override
-        public MapCodec<SoundSequenceReactorRecipe> codec() {
+        public MapCodec<SoundSequenceEtchingRecipe> codec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, SoundSequenceReactorRecipe> streamCodec() {
+        public StreamCodec<RegistryFriendlyByteBuf, SoundSequenceEtchingRecipe> streamCodec() {
             return STREAM_CODEC;
         }
     }
@@ -316,7 +445,7 @@ public record SoundSequenceReactorRecipe(
                 .requirements(AdvancementRequirements.Strategy.OR);
             criteria.forEach(advancement::addCriterion);
 
-            SoundSequenceReactorRecipe recipe = new SoundSequenceReactorRecipe(
+            SoundSequenceEtchingRecipe recipe = new SoundSequenceEtchingRecipe(
                 input,
                 intermediate,
                 result,
