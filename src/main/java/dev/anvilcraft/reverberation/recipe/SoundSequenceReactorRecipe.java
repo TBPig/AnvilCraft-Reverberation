@@ -5,7 +5,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.anvilcraft.lib.recipe.component.ItemIngredientPredicate;
 import dev.anvilcraft.reverberation.AnvilCraftReverberation;
+import dev.anvilcraft.reverberation.api.MergeSoundStore;
 import dev.anvilcraft.reverberation.api.SoundRequire;
+import dev.anvilcraft.reverberation.component.SoundSequenceData;
+import dev.anvilcraft.reverberation.init.AddonDataComponents;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
@@ -24,6 +27,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -32,15 +36,18 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * 音序蚀刻配方 - 需要按顺序完成多个砧音催化步骤的配方
  */
 public record SoundSequenceReactorRecipe(
-    ItemIngredientPredicate input,
+    ItemIngredientPredicate ingredient,
     ItemStack intermediate,
     ItemStack result,
     List<SoundRequire> steps,
@@ -50,7 +57,7 @@ public record SoundSequenceReactorRecipe(
 
     @Override
     public boolean matches(RecipeInput input, Level level) {
-        return this.input.test(input.getItem(0));
+        return this.ingredient.test(input.getItem(0));
     }
 
     @Override
@@ -82,9 +89,84 @@ public record SoundSequenceReactorRecipe(
         return new Builder();
     }
 
+    public static Stream<RecipeHolder<SoundSequenceReactorRecipe>> getRecipes(
+        Level level,
+        ItemStack input,
+        MergeSoundStore mergeSoundStore
+    ) {
+        return level.getRecipeManager()
+            .getAllRecipesFor(AddonRecipeType.SOUND_SEQUENCE_REACTOR_TYPE.get())
+            .stream()
+            .filter(holder -> {
+                SoundSequenceReactorRecipe recipe = holder.value();
+                // 检查是否匹配中间产物或初始物品
+                if (input.has(AddonDataComponents.SOUND_SEQUENCE.get())) {
+                    SoundSequenceData data = input.get(AddonDataComponents.SOUND_SEQUENCE.get());
+                    return data.id().equals(holder.id()) && recipe.canContinue(data, mergeSoundStore);
+                } else {
+                    return recipe.ingredient.test(input) && recipe.canStart(mergeSoundStore);
+                }
+            });
+    }
+
+    public static Optional<RecipeHolder<SoundSequenceReactorRecipe>> getRecipe(
+        Level level,
+        ItemStack input,
+        MergeSoundStore mergeSoundStore
+    ) {
+        return getRecipes(level, input, mergeSoundStore)
+            .max(Comparator.comparingInt(r -> r.value().priority()));
+    }
+
+    public boolean canStart(MergeSoundStore mergeSoundStore) {
+        if (steps.isEmpty()) return false;
+        return steps.getFirst().isValid(mergeSoundStore);
+    }
+
+    public boolean canContinue(SoundSequenceData data, MergeSoundStore mergeSoundStore) {
+        if (data.step() >= steps.size() * loops) return false;
+        int currentStepIndex = data.step() % steps.size();
+        return steps.get(currentStepIndex).isValid(mergeSoundStore);
+    }
+
+    public static ItemStack getOutput(
+        RecipeHolder<SoundSequenceReactorRecipe> holder,
+        ItemStack input,
+        SoundSequenceReactorRecipe recipe
+    ) {
+        ItemStack output;
+        int currentStep = getCurrentStep(input);
+        if (currentStep >= recipe.steps().size() * recipe.loops()) {
+            // 完成所有步骤，生成最终产物
+            return recipe.result().copy();
+        } else {
+            // 生成带有进度数据的过渡物品
+            float progress = (float) currentStep / (recipe.steps().size() * recipe.loops());
+            SoundSequenceData newData = new SoundSequenceData(
+                holder.id(),
+                currentStep,
+                progress
+            );
+
+            output = recipe.intermediate().copy();
+            output.set(AddonDataComponents.SOUND_SEQUENCE.get(), newData);
+            return output;
+        }
+    }
+
+    private static int getCurrentStep(ItemStack input) {
+        if (input.has(AddonDataComponents.SOUND_SEQUENCE.get())) {
+            SoundSequenceData data = input.get(AddonDataComponents.SOUND_SEQUENCE.get());
+            if (data != null) {
+                return data.step() + 1;
+            }
+        }
+        return 1;
+    }
+
     public static class Serializer implements RecipeSerializer<SoundSequenceReactorRecipe> {
         private static final MapCodec<SoundSequenceReactorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ItemIngredientPredicate.CODEC.fieldOf("input").forGetter(SoundSequenceReactorRecipe::input),
+            ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundSequenceReactorRecipe::ingredient),
             ItemStack.CODEC.fieldOf("intermediate").forGetter(SoundSequenceReactorRecipe::intermediate),
             ItemStack.CODEC.fieldOf("result").forGetter(SoundSequenceReactorRecipe::result),
             SoundRequire.CODEC.listOf().fieldOf("steps").forGetter(SoundSequenceReactorRecipe::steps),
@@ -94,7 +176,7 @@ public record SoundSequenceReactorRecipe(
 
         private static final StreamCodec<RegistryFriendlyByteBuf, SoundSequenceReactorRecipe> STREAM_CODEC = StreamCodec.of(
             (buf, recipe) -> {
-                ItemIngredientPredicate.STREAM_CODEC.encode(buf, recipe.input());
+                ItemIngredientPredicate.STREAM_CODEC.encode(buf, recipe.ingredient());
                 ItemStack.STREAM_CODEC.encode(buf, recipe.intermediate());
                 ItemStack.STREAM_CODEC.encode(buf, recipe.result());
                 writeSteps(buf, recipe);

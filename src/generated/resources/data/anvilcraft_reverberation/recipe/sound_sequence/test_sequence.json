@@ -1,6 +1,6 @@
 {
   "type": "anvilcraft_reverberation:sound_sequence_reactor_recipe",
-  "input": {
+  "ingredient": {
     "items": "minecraft:iron_ingot"
   },
   "intermediate": {
@@ -8,7 +8,7 @@
     "id": "minecraft:copper_ingot"
   },
   "loops": 1,
-  "priority": 50,
+  "priority": 100,
   "result": {
     "count": 1,
     "id": "minecraft:gold_ingot"

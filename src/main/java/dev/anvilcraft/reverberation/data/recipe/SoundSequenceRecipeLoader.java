@@ -20,7 +20,7 @@ public class SoundSequenceRecipeLoader {
             .soundRequire(SoundRequire.builder()
                 .energy(4, 6)
                 .build())
-            .priority(50)
+            .priority(100)
             .save(provider, "test_sequence");
     }
 }

@@ -4,27 +4,25 @@ import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import dev.anvilcraft.reverberation.api.SoundRequire;
 import dev.anvilcraft.reverberation.init.AddonItems;
 import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
-import dev.dubhe.anvilcraft.init.block.ModBlocks;
 import dev.dubhe.anvilcraft.init.item.ModItemTags;
+import net.minecraft.world.level.block.Blocks;
 
 public class SoundReactorRecipeLoader {
     public static void init(RegistrateRecipeProvider provider) {
         SoundReactorRecipe.builder()
-            .requires(ModItemTags.BRONZE_PLATES, 2)
+            .requires(ModItemTags.BRONZE_PLATES)
             .result(AddonItems.ACOUSTIC_COMPONENT.get())
             .soundRequire(SoundRequire.builder()
-                .minEnergy(8)
+                .minEnergy(12)
+                .timbre(Blocks.AMETHYST_BLOCK)
                 .build())
             .save(provider, "acoustic_component_0");
-
         SoundReactorRecipe.builder()
             .requires(ModItemTags.BRONZE_PLATES)
             .result(AddonItems.ACOUSTIC_COMPONENT.get())
             .soundRequire(SoundRequire.builder()
-                .minEnergy(16)
-                .timbre(ModBlocks.BRONZE_BLOCK.get())
+                .timbre(Blocks.BUDDING_AMETHYST)
                 .build())
-            .priority(1)
             .save(provider, "acoustic_component_1");
     }
 }

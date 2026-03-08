@@ -1,7 +1,6 @@
 {
   "type": "anvilcraft_reverberation:sound_reactor_recipe",
   "ingredient": {
-    "count": 2,
     "items": "#c:plates/bronze"
   },
   "priority": 0,
@@ -10,7 +9,11 @@
     "id": "anvilcraft_reverberation:acoustic_component"
   },
   "sound_require": {
-    "minEnergy": 8,
-    "requiredTimbres": []
+    "minEnergy": 12,
+    "requiredTimbres": [
+      {
+        "block": "minecraft:amethyst_block"
+      }
+    ]
   }
 }

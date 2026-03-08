@@ -2,13 +2,14 @@ package dev.anvilcraft.reverberation.block;
 
 import dev.anvilcraft.reverberation.block.entity.MergeSoundPillarBlockEntity;
 import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
+import dev.anvilcraft.reverberation.recipe.SoundSequenceReactorRecipe;
 import dev.dubhe.anvilcraft.api.hammer.IHammerRemovable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -22,12 +23,8 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
@@ -64,77 +61,67 @@ public class AnvilSoundReactorBlock extends Block implements IHammerRemovable {
     public static void hitByAnvil(Level level, BlockPos pos, BlockState reactor) {
         if (!(level.getBlockEntity(pos.below()) instanceof MergeSoundPillarBlockEntity pillar)) return;
 
-        Map<Item, List<ItemEntity>> itemGroups = selectItemEntity(level, pos);
-        if (itemGroups == null) return;
-
         Direction direction = reactor.getValue(FACING);
         Vec3 spawnPos = pos.offset(direction.getStepX(), 0, direction.getStepZ())
             .getCenter()
             .add(0, 0.25, 0);
+        List<ItemEntity> itemEntities = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos));
 
-        // 检查每个物品组
-        for (Map.Entry<Item, List<ItemEntity>> entry : itemGroups.entrySet()) {
-            Item item = entry.getKey();
-            List<ItemEntity> itemEntities = entry.getValue();
+        for (ItemEntity entity : itemEntities) {
+            ItemStack entityStack = entity.getItem();
 
-            // 计算总数量
-            int totalCount = 0;
-            for (ItemEntity entity : itemEntities) {
-                totalCount += entity.getItem().getCount();
+            Optional<RecipeHolder<SoundSequenceReactorRecipe>> sequenceOpt =
+                SoundSequenceReactorRecipe.getRecipe(level, entityStack, pillar.getSound());
+
+            Optional<RecipeHolder<SoundReactorRecipe>> simpleOpt =
+                SoundReactorRecipe.getRecipe(level, entityStack, pillar.getSound());
+
+            int flag;
+            if (sequenceOpt.isPresent() && simpleOpt.isEmpty()) {
+                flag = 1;
+            } else if (sequenceOpt.isEmpty() && simpleOpt.isPresent()) {
+                flag = 0;
+            } else if (sequenceOpt.isPresent() && simpleOpt.isPresent()) {
+                flag = sequenceOpt.get().value().priority() > simpleOpt.get().value().priority() ? 1 : 0;
+            } else {
+                flag = 2;
             }
 
-            // 检测是否有对应配方
-            ItemStack testStack = new ItemStack(item);
-            testStack.setCount(Math.min(testStack.getMaxStackSize(), totalCount));
-            Optional<SoundReactorRecipe> optional = SoundReactorRecipe.getRecipe(level, testStack, pillar.getSound());
-            if (optional.isEmpty()) continue;
-            SoundReactorRecipe recipe = optional.get();
-
-            // 消耗物品
-            int oneRequiredCount = recipe.input().count();
-            int runTime = totalCount / oneRequiredCount;
-            translateItem(level, oneRequiredCount, runTime, itemEntities, recipe, spawnPos);
+            if (flag == 1) {
+                // 处理序列配方
+                RecipeHolder<SoundSequenceReactorRecipe> holder = sequenceOpt.get();
+                ItemStack output = SoundSequenceReactorRecipe.getOutput(holder, entityStack, holder.value());
+                transItem(level, output, spawnPos, entityStack);
+            } else if (flag == 0) {
+                // 处理简单配方
+                RecipeHolder<SoundReactorRecipe> holder = simpleOpt.get();
+                ItemStack output = holder.value().result();
+                transItem(level, output, spawnPos, entityStack);
+            }
         }
     }
 
     /**
-     * 收集所有物品并按物品类型分组
+     * 生成物品实体并处理源物品
      */
-    private static @Nullable Map<Item, List<ItemEntity>> selectItemEntity(Level level, BlockPos pos) {
-
-        List<ItemEntity> entities = level.getEntitiesOfClass(ItemEntity.class, new AABB(pos));
-        if (entities.isEmpty()) return null;
-
-        Map<Item, List<ItemEntity>> itemGroups = new HashMap<>();
-        for (ItemEntity itemEntity : entities) {
-            itemGroups.computeIfAbsent(itemEntity.getItem().getItem(), k -> new ArrayList<>()).add(itemEntity);
-        }
-        return itemGroups;
-    }
-
-    public static void translateItem(
+    private static void transItem(
         Level level,
-        int requiredCount,
-        int runTime,
-        List<ItemEntity> itemEntities,
-        SoundReactorRecipe recipe,
-        Vec3 spawnPos
+        ItemStack output,
+        Vec3 spawnPos,
+        ItemStack sourceStack
     ) {
-        int remainingCount = requiredCount * runTime;
-        for (ItemEntity entity : itemEntities) {
-            if (remainingCount <= 0) break;
+        if (output.getMaxStackSize() <= 0) return;
 
-            ItemStack entityStack = entity.getItem();
-            int consumeCount = Math.min(entityStack.getCount(), remainingCount);
-            entityStack.shrink(consumeCount);
-            remainingCount -= consumeCount;
-        }
-
-        // 生成物品
-        ItemStack result = recipe.result();
-        for (int i = 0; i < runTime; i++) {
-            ItemEntity resultEntity = new ItemEntity(level, spawnPos.x, spawnPos.y, spawnPos.z, result.copy(), 0, 0, 0);
+        int count = sourceStack.getCount();
+        int consumeCount = 0;
+        while (consumeCount < count) {
+            int stackSize = Math.min(count - consumeCount, output.getMaxStackSize());
+            ItemStack stack = output.copy();
+            stack.setCount(stackSize);
+            ItemEntity resultEntity = new ItemEntity(level, spawnPos.x, spawnPos.y, spawnPos.z, stack, 0, 0, 0);
             level.addFreshEntity(resultEntity);
+            consumeCount += stackSize;
         }
+        sourceStack.shrink(count);
     }
 }

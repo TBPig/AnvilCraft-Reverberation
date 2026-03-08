@@ -5,6 +5,7 @@ import com.tterrag.registrate.Registrate;
 import dev.anvilcraft.reverberation.data.AddonDatagen;
 import dev.anvilcraft.reverberation.init.AddonBlockEntities;
 import dev.anvilcraft.reverberation.init.AddonBlocks;
+import dev.anvilcraft.reverberation.init.AddonDataComponents;
 import dev.anvilcraft.reverberation.init.AddonItemGroups;
 import dev.anvilcraft.reverberation.init.AddonItems;
 import dev.anvilcraft.lib.config.ConfigManager;
@@ -31,6 +32,7 @@ public class AnvilCraftReverberation {
         AddonBlockEntities.register();
         AddonRecipeType.register(modEventBus);
         AddonMelodies.register();
+        AddonDataComponents.register(modEventBus);
         AddonDatagen.init();
     }
 

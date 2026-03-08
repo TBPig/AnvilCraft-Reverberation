@@ -81,7 +81,7 @@ public record SoundReactorRecipe(
         return new Builder();
     }
 
-    public static Stream<SoundReactorRecipe> getRecipes(
+    public static Stream<RecipeHolder<SoundReactorRecipe>> getRecipes(
         Level level,
         ItemStack input,
         MergeSoundStore mergeSoundStore
@@ -89,18 +89,19 @@ public record SoundReactorRecipe(
         return level.getRecipeManager()
             .getAllRecipesFor(AddonRecipeType.SOUND_REACTOR_TYPE.get())
             .stream()
-            .map(RecipeHolder::value)
-            .filter(recipe -> recipe.matches(new SingleRecipeInput(input), level))
-            .filter(recipe -> recipe.soundRequire().isValid(mergeSoundStore));
+            .filter(holder -> {
+                SoundReactorRecipe recipe = holder.value();
+                return recipe.matches(new SingleRecipeInput(input), level) && recipe.soundRequire().isValid(mergeSoundStore);
+            });
     }
 
-    public static Optional<SoundReactorRecipe> getRecipe(
+    public static Optional<RecipeHolder<SoundReactorRecipe>> getRecipe(
         Level level,
         ItemStack input,
         MergeSoundStore mergeSoundStore
     ) {
         return getRecipes(level, input, mergeSoundStore)
-            .max(Comparator.comparingInt(SoundReactorRecipe::priority));
+            .max(Comparator.comparingInt(holder -> holder.value().priority()));
     }
 
     public static class Serializer implements RecipeSerializer<SoundReactorRecipe> {
