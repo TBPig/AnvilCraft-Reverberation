@@ -208,6 +208,7 @@ public record SoundRequire(
         return Component.empty();
     }
 
+    public static final SoundRequire EMPTY = new SoundRequire(null, null, null, null, null, null);
 
     public static Builder builder() {
         return new Builder();

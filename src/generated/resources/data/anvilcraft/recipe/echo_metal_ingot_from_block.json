@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "anvilcraft_reverberation:echo_metal_ingot",
+  "ingredients": [
+    {
+      "item": "anvilcraft_reverberation:echo_metal_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "anvilcraft_reverberation:echo_metal_ingot"
+  }
+}

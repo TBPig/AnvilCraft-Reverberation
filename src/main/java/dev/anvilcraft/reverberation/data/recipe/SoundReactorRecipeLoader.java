@@ -5,6 +5,7 @@ import dev.anvilcraft.reverberation.api.SoundRequire;
 import dev.anvilcraft.reverberation.init.AddonItems;
 import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
 import dev.dubhe.anvilcraft.init.item.ModItemTags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 public class SoundReactorRecipeLoader {
@@ -24,5 +25,12 @@ public class SoundReactorRecipeLoader {
                 .timbre(Blocks.BUDDING_AMETHYST)
                 .build())
             .save(provider, "acoustic_component_1");
+
+        SoundReactorRecipe.builder()
+            .requires(AddonItems.INCOMPLETE_ECHO_METAL_INGOT)
+            .result(Items.ECHO_SHARD)
+            .soundRequire(SoundRequire.EMPTY)
+            .priority(-1)
+            .save(provider);
     }
 }

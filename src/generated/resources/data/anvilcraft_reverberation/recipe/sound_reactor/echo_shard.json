@@ -1,0 +1,12 @@
+{
+  "type": "anvilcraft_reverberation:sound_reactor_recipe",
+  "ingredient": {
+    "items": "anvilcraft_reverberation:incomplete_echo_metal_ingot"
+  },
+  "priority": -1,
+  "result": {
+    "count": 1,
+    "id": "minecraft:echo_shard"
+  },
+  "sound_require": {}
+}
