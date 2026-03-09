@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public record SoundReactorRecipe(
-    ItemIngredientPredicate input,
+    ItemIngredientPredicate ingredient,
     ItemStack result,
     SoundRequire soundRequire,
     int priority
@@ -49,7 +49,7 @@ public record SoundReactorRecipe(
 
     @Override
     public boolean matches(RecipeInput input, Level level) {
-        return this.input.test(input.getItem(0));
+        return this.ingredient.test(input.getItem(0));
     }
 
     @Override
@@ -107,7 +107,7 @@ public record SoundReactorRecipe(
     public static class Serializer implements RecipeSerializer<SoundReactorRecipe> {
 
         private static final MapCodec<SoundReactorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundReactorRecipe::input),
+            ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundReactorRecipe::ingredient),
             ItemStack.CODEC.fieldOf("result").forGetter(SoundReactorRecipe::result),
             SoundRequire.CODEC.fieldOf("sound_require").forGetter(SoundReactorRecipe::soundRequire),
             Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundReactorRecipe::priority)
@@ -115,7 +115,7 @@ public record SoundReactorRecipe(
 
         private static final StreamCodec<RegistryFriendlyByteBuf, SoundReactorRecipe> STREAM_CODEC = StreamCodec.of(
             (buf, recipe) -> {
-                ItemIngredientPredicate.STREAM_CODEC.encode(buf, recipe.input());
+                ItemIngredientPredicate.STREAM_CODEC.encode(buf, recipe.ingredient());
                 ItemStack.STREAM_CODEC.encode(buf, recipe.result());
                 SoundRequire.STREAM_CODEC.encode(buf, recipe.soundRequire());
                 buf.writeInt(recipe.priority());

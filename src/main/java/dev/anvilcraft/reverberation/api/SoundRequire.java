@@ -3,6 +3,7 @@ package dev.anvilcraft.reverberation.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -129,6 +130,84 @@ public record SoundRequire(
         boolean present = buf.readBoolean();
         return present ? Timbre.STREAM_CODEC.decode(buf) : null;
     }
+
+    /**
+     * 获取完整的步骤描述（包含所有要求）
+     */
+    public static Component getFullDescription(SoundRequire soundRequire) {
+        StringBuilder description = new StringBuilder();
+
+        description.append(getEnergyDescription(soundRequire).getString());
+        if (!description.isEmpty() && description.charAt(description.length() - 1) != ' ') description.append(" | ");
+        description.append(getSourceNumDescription(soundRequire).getString());
+        if (!description.isEmpty() && description.charAt(description.length() - 1) != ' ') description.append(" | ");
+        description.append(getTimbreDescription(soundRequire).getString());
+        if (!description.isEmpty() && description.charAt(description.length() - 1) != ' ') description.append(" | ");
+        description.append(getMelodyDescription(soundRequire).getString());
+
+        return Component.literal(description.toString());
+    }
+
+    public static Component getEnergyDescription(SoundRequire soundRequire) {
+        if (soundRequire.minEnergy() != null && soundRequire.maxEnergy() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.energy",
+                soundRequire.minEnergy(), soundRequire.maxEnergy()
+            );
+        } else if (soundRequire.minEnergy() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.min_energy",
+                soundRequire.minEnergy()
+            );
+        } else if (soundRequire.maxEnergy() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.max_energy",
+                soundRequire.maxEnergy()
+            );
+        }
+        return Component.empty();
+    }
+
+    public static Component getSourceNumDescription(SoundRequire soundRequire) {
+        if (soundRequire.minSourceNum() != null && soundRequire.maxSourceNum() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.sources",
+                soundRequire.minSourceNum(), soundRequire.maxSourceNum()
+            );
+        } else if (soundRequire.minSourceNum() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.min_sources",
+                soundRequire.minSourceNum()
+            );
+        } else if (soundRequire.maxSourceNum() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.max_sources",
+                soundRequire.maxSourceNum()
+            );
+        }
+        return Component.empty();
+    }
+
+    public static Component getTimbreDescription(SoundRequire soundRequire) {
+        if (soundRequire.requiredTimbre() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.timbre",
+                soundRequire.requiredTimbre().block().getName()
+            );
+        }
+        return Component.empty();
+    }
+
+    public static Component getMelodyDescription(SoundRequire soundRequire) {
+        if (soundRequire.requiredMelody() != null) {
+            return Component.translatable(
+                "tooltip.anvilcraft_reverberation.sound_require.melody",
+                soundRequire.requiredMelody().getId().getPath()
+            );
+        }
+        return Component.empty();
+    }
+
 
     public static Builder builder() {
         return new Builder();

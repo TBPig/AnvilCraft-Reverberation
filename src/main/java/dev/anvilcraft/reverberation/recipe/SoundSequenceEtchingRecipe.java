@@ -10,6 +10,7 @@ import dev.anvilcraft.reverberation.api.SoundRequire;
 import dev.anvilcraft.reverberation.component.SoundSequenceData;
 import dev.anvilcraft.reverberation.init.AddonDataComponents;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
@@ -168,7 +169,7 @@ public record SoundSequenceEtchingRecipe(
         }
     }
 
-    private int allStepNum() {
+    public int allStepNum() {
         return steps.size() * loops();
     }
 
@@ -205,12 +206,9 @@ public record SoundSequenceEtchingRecipe(
         List<Component> tooltip = event.getToolTip();
 
         tooltip.add(Component.translatable("tooltip.anvilcraft_reverberation.sound_sequence.progress")
-            .withStyle(net.minecraft.ChatFormatting.GRAY));
-        tooltip.add(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.step",
-                step + 1, total
-            )
-            .withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+            .withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("tooltip.anvilcraft_reverberation.sound_sequence.step", step + 1, total)
+            .withStyle(ChatFormatting.DARK_GRAY));
 
         int remaining = total - step;
         for (int i = 0; i < length; i++) {
@@ -218,79 +216,15 @@ public record SoundSequenceEtchingRecipe(
                 break;
             }
             SoundRequire soundRequire = recipe.steps().get((i + step) % length);
-            Component textComponent = getStepDescription(soundRequire);
+            Component textComponent = SoundRequire.getFullDescription(soundRequire);
             if (i == 0) {
                 tooltip.add(Component.translatable("tooltip.anvilcraft_reverberation.sound_sequence.next", textComponent)
-                    .withStyle(net.minecraft.ChatFormatting.AQUA));
+                    .withStyle(ChatFormatting.AQUA));
             } else {
                 tooltip.add(Component.literal("→ ").append(textComponent)
-                    .withStyle(net.minecraft.ChatFormatting.DARK_AQUA));
+                    .withStyle(ChatFormatting.DARK_AQUA));
             }
         }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    private static Component getStepDescription(SoundRequire soundRequire) {
-        StringBuilder description = new StringBuilder();
-
-        // 添加能量要求
-        if (soundRequire.minEnergy() != null && soundRequire.maxEnergy() != null) {
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.energy",
-                soundRequire.minEnergy(), soundRequire.maxEnergy()
-            ).getString());
-        } else if (soundRequire.minEnergy() != null) {
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.min_energy",
-                soundRequire.minEnergy()
-            ).getString());
-        } else if (soundRequire.maxEnergy() != null) {
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.max_energy",
-                soundRequire.maxEnergy()
-            ).getString());
-        }
-
-        // 添加声源数量要求
-        if (soundRequire.minSourceNum() != null && soundRequire.maxSourceNum() != null) {
-            if (!description.isEmpty()) description.append(", ");
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.sources",
-                soundRequire.minSourceNum(), soundRequire.maxSourceNum()
-            ).getString());
-        } else if (soundRequire.minSourceNum() != null) {
-            if (!description.isEmpty()) description.append(", ");
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.min_sources",
-                soundRequire.minSourceNum()
-            ).getString());
-        } else if (soundRequire.maxSourceNum() != null) {
-            if (!description.isEmpty()) description.append(", ");
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.max_sources",
-                soundRequire.maxSourceNum()
-            ).getString());
-        }
-
-        // 添加音色要求
-        if (soundRequire.requiredTimbre() != null) {
-            if (!description.isEmpty()) description.append(", ");
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.timbre",
-                soundRequire.requiredTimbre().block().getName()
-            ).getString());
-        }
-
-        // 添加旋律要求
-        if (soundRequire.requiredMelody() != null) {
-            if (!description.isEmpty()) description.append(", ");
-            description.append(Component.translatable(
-                "tooltip.anvilcraft_reverberation.sound_sequence.melody",
-                soundRequire.requiredMelody().getId().getPath()
-            ).getString());
-        }
-
-        return Component.literal(description.toString());
     }
 
     public static class Serializer implements RecipeSerializer<SoundSequenceEtchingRecipe> {

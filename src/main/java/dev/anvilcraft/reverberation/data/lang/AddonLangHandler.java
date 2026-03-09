@@ -18,14 +18,19 @@ public class AddonLangHandler {
 
         provider.add("tooltip.anvilcraft_reverberation.sound_sequence.progress", "Sound Sequence Etching Progress");
         provider.add("tooltip.anvilcraft_reverberation.sound_sequence.step", "§8Step: %d / %d");
+        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.loops", "Loops: %d");
+        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.all_steps", "All Steps: %d");
         provider.add("tooltip.anvilcraft_reverberation.sound_sequence.next", "§bNext: %s");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.energy", "Energy [%d-%d]");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.min_energy", "Min Energy %d");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.max_energy", "Max Energy %d");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.sources", "Sources [%d-%d]");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.min_sources", "Min Sources %d");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.max_sources", "Max Sources %d");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.timbre", "Timbre: %s");
-        provider.add("tooltip.anvilcraft_reverberation.sound_sequence.melody", "Melody: %s");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.energy", "Energy [%d-%d]");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.min_energy", "Min Energy %d");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.max_energy", "Max Energy %d");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.sources", "Sources [%d-%d]");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.min_sources", "Min Sources %d");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.max_sources", "Max Sources %d");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.timbre", "Timbre: %s");
+        provider.add("tooltip.anvilcraft_reverberation.sound_require.melody", "Melody: %s");
+
+        provider.add("gui.anvilcraft_reverberation.category.sound_reactor", "Sound Reactor");
+        provider.add("gui.anvilcraft_reverberation.category.sound_sequence_etching", "Sound Sequence Etching");
     }
 }
