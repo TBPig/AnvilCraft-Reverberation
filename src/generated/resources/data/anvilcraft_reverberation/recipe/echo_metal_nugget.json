@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "anvilcraft_reverberation:echo_metal_ingot"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "anvilcraft_reverberation:echo_metal_nugget"
+  }
+}

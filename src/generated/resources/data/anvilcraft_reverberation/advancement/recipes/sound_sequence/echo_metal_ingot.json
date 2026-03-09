@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "anvilcraft_reverberation:sound_sequence/test_sequence"
+        "recipe": "anvilcraft_reverberation:sound_sequence/echo_metal_ingot"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -15,7 +15,7 @@
   ],
   "rewards": {
     "recipes": [
-      "anvilcraft_reverberation:sound_sequence/test_sequence"
+      "anvilcraft_reverberation:sound_sequence/echo_metal_ingot"
     ]
   }
 }

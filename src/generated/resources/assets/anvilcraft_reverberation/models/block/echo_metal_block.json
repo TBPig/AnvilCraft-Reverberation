@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "anvilcraft_reverberation:block/echo_metal_block"
+  }
+}

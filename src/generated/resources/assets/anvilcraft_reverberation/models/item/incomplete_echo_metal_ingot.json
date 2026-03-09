@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "anvilcraft_reverberation:item/incomplete_echo_metal_ingot"
+  }
+}

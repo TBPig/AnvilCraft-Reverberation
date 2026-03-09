@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "anvilcraft_reverberation:echo_metal_ingot",
+  "key": {
+    "A": {
+      "item": "anvilcraft_reverberation:echo_metal_nugget"
+    }
+  },
+  "pattern": [
+    "AAA",
+    "AAA",
+    "AAA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "anvilcraft_reverberation:echo_metal_ingot"
+  }
+}

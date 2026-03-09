@@ -17,7 +17,7 @@ public class EqualMelody extends Melody {
 
         MergeSound sound1 = soundHistory.getLast();
         MergeSound sound2 = soundHistory.get(soundHistory.size() - 2);
-        return sound1.getEnergy() == sound2.getEnergy();
+        return sound1.getEnergy() == sound2.getEnergy() && sound1.getEnergy() > 0;
     }
 
     @Override
