@@ -1,6 +1,6 @@
 package dev.anvilcraft.reverberation.integration.jei.recipe;
 
-import dev.anvilcraft.reverberation.api.SoundRequire;
+import dev.anvilcraft.reverberation.recipe.component.SoundPredicate;
 import dev.anvilcraft.reverberation.init.AddonBlocks;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import dev.anvilcraft.reverberation.integration.jei.AddonJeiPlugin;
@@ -121,7 +121,7 @@ public class SoundSequenceEtchingCategory implements IRecipeCategory<RecipeHolde
         for (int i = 0; i < recipe.steps().size(); i++) {
             guiGraphics.drawString(
                 Minecraft.getInstance().font,
-                SoundRequire.getFullDescription(recipe.steps().get(i)).getString(),
+                SoundPredicate.getFullDescription(recipe.steps().get(i)).getString(),
                 1,
                 30 + i * 10,
                 0xFF000000,

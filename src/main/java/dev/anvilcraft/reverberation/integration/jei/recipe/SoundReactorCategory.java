@@ -1,12 +1,11 @@
 package dev.anvilcraft.reverberation.integration.jei.recipe;
 
-import dev.anvilcraft.reverberation.api.SoundRequire;
+import dev.anvilcraft.reverberation.recipe.component.SoundPredicate;
 import dev.anvilcraft.reverberation.init.AddonBlocks;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import dev.anvilcraft.reverberation.integration.jei.AddonJeiPlugin;
 import dev.anvilcraft.reverberation.recipe.SoundReactorRecipe;
 import dev.dubhe.anvilcraft.client.support.RenderSupport;
-import dev.dubhe.anvilcraft.init.block.ModBlocks;
 import dev.dubhe.anvilcraft.integration.jei.util.JeiRecipeUtil;
 import dev.dubhe.anvilcraft.integration.jei.util.JeiRenderHelper;
 import mezz.jei.api.gui.ITickTimer;
@@ -126,7 +125,7 @@ public class SoundReactorCategory implements IRecipeCategory<RecipeHolder<SoundR
         SoundReactorRecipe recipe = recipeHolder.value();
         guiGraphics.drawString(
             Minecraft.getInstance().font,
-            SoundRequire.getEnergyDescription(recipe.soundRequire()).getString(),
+            SoundPredicate.getEnergyDescription(recipe.soundPredicate()).getString(),
             1,
             1,
             0xFF000000,
@@ -134,7 +133,7 @@ public class SoundReactorCategory implements IRecipeCategory<RecipeHolder<SoundR
         );
         guiGraphics.drawString(
             Minecraft.getInstance().font,
-            SoundRequire.getSourceNumDescription(recipe.soundRequire()).getString(),
+            SoundPredicate.getSourceNumDescription(recipe.soundPredicate()).getString(),
             1,
             13,
             0xFF000000,
@@ -142,7 +141,7 @@ public class SoundReactorCategory implements IRecipeCategory<RecipeHolder<SoundR
         );
         guiGraphics.drawString(
             Minecraft.getInstance().font,
-            SoundRequire.getTimbreDescription(recipe.soundRequire()).getString(),
+            SoundPredicate.getTimbreDescription(recipe.soundPredicate()).getString(),
             1,
             45,
             0xFF000000,
@@ -150,7 +149,7 @@ public class SoundReactorCategory implements IRecipeCategory<RecipeHolder<SoundR
         );
         guiGraphics.drawString(
             Minecraft.getInstance().font,
-            SoundRequire.getMelodyDescription(recipe.soundRequire()).getString(),
+            SoundPredicate.getMelodyDescription(recipe.soundPredicate()).getString(),
             1,
             55,
             0xFF000000,

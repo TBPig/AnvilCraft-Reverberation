@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.anvilcraft.lib.recipe.component.ItemIngredientPredicate;
 import dev.anvilcraft.reverberation.AnvilCraftReverberation;
 import dev.anvilcraft.reverberation.api.MergeSoundStore;
-import dev.anvilcraft.reverberation.api.SoundRequire;
+import dev.anvilcraft.reverberation.recipe.component.SoundPredicate;
 import dev.anvilcraft.reverberation.component.SoundSequenceData;
 import dev.anvilcraft.reverberation.init.AddonDataComponents;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
@@ -55,7 +55,7 @@ public record SoundSequenceEtchingRecipe(
     ItemIngredientPredicate ingredient,
     ItemStack intermediate,
     ItemStack result,
-    List<SoundRequire> steps,
+    List<SoundPredicate> steps,
     int loops,
     int priority
 ) implements Recipe<RecipeInput> {
@@ -94,6 +94,7 @@ public record SoundSequenceEtchingRecipe(
         return new Builder();
     }
 
+    @SuppressWarnings({"DataFlowIssue"})
     public static Optional<RecipeHolder<SoundSequenceEtchingRecipe>> getRecipe(
         Level level,
         ItemStack input,
@@ -115,6 +116,7 @@ public record SoundSequenceEtchingRecipe(
             .max(Comparator.comparingInt(r -> r.value().priority()));
     }
 
+    @SuppressWarnings({"DataFlowIssue"})
     public static Optional<RecipeHolder<SoundSequenceEtchingRecipe>> getRecipe(
         Level level,
         ItemStack input
@@ -185,6 +187,7 @@ public record SoundSequenceEtchingRecipe(
 
 
     @OnlyIn(Dist.CLIENT)
+    @SuppressWarnings({"DataFlowIssue"})
     public static void addToTooltip(ItemTooltipEvent event) {
         // 源代码参考自《机械动力》：https://github.com/Creators-of-Create/Create
         ItemStack stack = event.getItemStack();
@@ -193,7 +196,6 @@ public record SoundSequenceEtchingRecipe(
         }
 
         SoundSequenceData soundSequenceData = stack.get(AddonDataComponents.SOUND_SEQUENCE.get());
-        @SuppressWarnings({"DataFlowIssue"})
         Optional<RecipeHolder<SoundSequenceEtchingRecipe>> optionalRecipe = getRecipe(Minecraft.getInstance().level, stack);
 
         if (optionalRecipe.isEmpty()) return;
@@ -215,8 +217,8 @@ public record SoundSequenceEtchingRecipe(
             if (i >= remaining) {
                 break;
             }
-            SoundRequire soundRequire = recipe.steps().get((i + step) % length);
-            Component textComponent = SoundRequire.getFullDescription(soundRequire);
+            SoundPredicate soundPredicate = recipe.steps().get((i + step) % length);
+            Component textComponent = SoundPredicate.getFullDescription(soundPredicate);
             if (i == 0) {
                 tooltip.add(Component.translatable("tooltip.anvilcraft_reverberation.sound_sequence.next", textComponent)
                     .withStyle(ChatFormatting.AQUA));
@@ -232,7 +234,7 @@ public record SoundSequenceEtchingRecipe(
             ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundSequenceEtchingRecipe::ingredient),
             ItemStack.CODEC.fieldOf("intermediate").forGetter(SoundSequenceEtchingRecipe::intermediate),
             ItemStack.CODEC.fieldOf("result").forGetter(SoundSequenceEtchingRecipe::result),
-            SoundRequire.CODEC.listOf().fieldOf("steps").forGetter(SoundSequenceEtchingRecipe::steps),
+            SoundPredicate.CODEC.listOf().fieldOf("steps").forGetter(SoundSequenceEtchingRecipe::steps),
             Codec.INT.fieldOf("loops").orElse(1).forGetter(SoundSequenceEtchingRecipe::loops),
             Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundSequenceEtchingRecipe::priority)
         ).apply(instance, SoundSequenceEtchingRecipe::new));
@@ -256,19 +258,19 @@ public record SoundSequenceEtchingRecipe(
             )
         );
 
-        private static List<SoundRequire> readSteps(RegistryFriendlyByteBuf buf) {
+        private static List<SoundPredicate> readSteps(RegistryFriendlyByteBuf buf) {
             int stepCount = buf.readVarInt();
-            List<SoundRequire> steps = new ArrayList<>();
+            List<SoundPredicate> steps = new ArrayList<>();
             for (int i = 0; i < stepCount; i++) {
-                steps.add(SoundRequire.STREAM_CODEC.decode(buf));
+                steps.add(SoundPredicate.STREAM_CODEC.decode(buf));
             }
             return steps;
         }
 
         private static void writeSteps(RegistryFriendlyByteBuf buf, SoundSequenceEtchingRecipe recipe) {
             buf.writeVarInt(recipe.steps().size());
-            for (SoundRequire step : recipe.steps()) {
-                SoundRequire.STREAM_CODEC.encode(buf, step);
+            for (SoundPredicate step : recipe.steps()) {
+                SoundPredicate.STREAM_CODEC.encode(buf, step);
             }
         }
 
@@ -288,7 +290,7 @@ public record SoundSequenceEtchingRecipe(
         private @Nullable ItemIngredientPredicate input;
         private @Nullable ItemStack intermediate;
         private @Nullable ItemStack result;
-        private final List<SoundRequire> steps = new ArrayList<>();
+        private final List<SoundPredicate> steps = new ArrayList<>();
         private int loops = 1;
         private int priority = 0;
         protected final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
@@ -347,8 +349,8 @@ public record SoundSequenceEtchingRecipe(
             return this;
         }
 
-        public Builder soundRequire(SoundRequire soundRequire) {
-            this.steps.add(soundRequire);
+        public Builder soundRequire(SoundPredicate soundPredicate) {
+            this.steps.add(soundPredicate);
             return this;
         }
 

@@ -1,7 +1,11 @@
-package dev.anvilcraft.reverberation.api;
+package dev.anvilcraft.reverberation.recipe.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.anvilcraft.reverberation.api.Melody;
+import dev.anvilcraft.reverberation.api.MergeSound;
+import dev.anvilcraft.reverberation.api.MergeSoundStore;
+import dev.anvilcraft.reverberation.api.Timbre;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -11,25 +15,37 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.Set;
 
-public record SoundRequire(
+/**
+ * 声音谓词
+ * <p>
+ * 用于定义声音匹配规则，包括能量范围、源数量范围、音调和旋律
+ * </p>
+ * @param minEnergy         最小能量
+ * @param maxEnergy         最大能量
+ * @param minSourceNum    最小源数量
+ * @param maxSourceNum    最大源数量
+ * @param timbre        音调
+ * @param melody        旋律
+ */
+public record SoundPredicate(
     @Nullable Integer minEnergy,
     @Nullable Integer maxEnergy,
     @Nullable Integer minSourceNum,
     @Nullable Integer maxSourceNum,
-    @Nullable Timbre requiredTimbre,
-    @Nullable Melody requiredMelody
+    @Nullable Timbre timbre,
+    @Nullable Melody melody
 ) {
-    public static final Codec<SoundRequire> CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final Codec<SoundPredicate> CODEC = RecordCodecBuilder.create(instance -> instance
         .group(
             Codec.INT.optionalFieldOf("minEnergy").forGetter(req -> Optional.ofNullable(req.minEnergy)),
             Codec.INT.optionalFieldOf("maxEnergy").forGetter(req -> Optional.ofNullable(req.maxEnergy)),
             Codec.INT.optionalFieldOf("minSourceNum").forGetter(req -> Optional.ofNullable(req.minSourceNum)),
             Codec.INT.optionalFieldOf("maxSourceNum").forGetter(req -> Optional.ofNullable(req.maxSourceNum)),
-            Timbre.CODEC.optionalFieldOf("requiredTimbre").forGetter(req -> Optional.ofNullable(req.requiredTimbre)),
-            Melody.CODEC.optionalFieldOf("requiredMelody").forGetter(req -> Optional.ofNullable(req.requiredMelody))
+            Timbre.CODEC.optionalFieldOf("timbre").forGetter(req -> Optional.ofNullable(req.timbre)),
+            Melody.CODEC.optionalFieldOf("melody").forGetter(req -> Optional.ofNullable(req.melody))
         )
         .apply(
-            instance, (minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbres, requiredMelody) -> new SoundRequire(
+            instance, (minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbres, requiredMelody) -> new SoundPredicate(
                 minEnergy.orElse(null),
                 maxEnergy.orElse(null),
                 minSourceNum.orElse(null),
@@ -40,7 +56,7 @@ public record SoundRequire(
         )
     );
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, SoundRequire> STREAM_CODEC = StreamCodec.of(
+    public static final StreamCodec<RegistryFriendlyByteBuf, SoundPredicate> STREAM_CODEC = StreamCodec.of(
         (buf, req) -> {
             writeOptionalInteger(buf, req.minEnergy());
             writeOptionalInteger(buf, req.maxEnergy());
@@ -57,7 +73,7 @@ public record SoundRequire(
             Timbre requiredTimbre = readTimbre(buf);
             Melody requiredMelody = readMelody(buf);
 
-            return new SoundRequire(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbre, requiredMelody);
+            return new SoundPredicate(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbre, requiredMelody);
         }
     );
 
@@ -85,10 +101,10 @@ public record SoundRequire(
         if (maxSourceNum != null && currentSourceNum > maxSourceNum) {
             return false;
         }
-        if (requiredTimbre != null && !currentTimbres.contains(requiredTimbre)) {
+        if (timbre != null && !currentTimbres.contains(timbre)) {
             return false;
         }
-        if (requiredMelody != null && !requiredMelody.satisfy(soundStore)) {
+        if (melody != null && !melody.satisfy(soundStore)) {
             return false;
         }
 
@@ -107,10 +123,10 @@ public record SoundRequire(
         return present ? buf.readInt() : null;
     }
 
-    private static void writeMelody(RegistryFriendlyByteBuf buf, SoundRequire req) {
-        buf.writeBoolean(req.requiredMelody() != null);
-        if (req.requiredMelody() != null) {
-            Melody.STREAM_CODEC.encode(buf, req.requiredMelody());
+    private static void writeMelody(RegistryFriendlyByteBuf buf, SoundPredicate req) {
+        buf.writeBoolean(req.melody() != null);
+        if (req.melody() != null) {
+            Melody.STREAM_CODEC.encode(buf, req.melody());
         }
     }
 
@@ -119,10 +135,10 @@ public record SoundRequire(
         return present ? Melody.STREAM_CODEC.decode(buf) : null;
     }
 
-    private static void writeTimbre(RegistryFriendlyByteBuf buf, SoundRequire req) {
-        buf.writeBoolean(req.requiredTimbre != null);
-        if (req.requiredTimbre != null) {
-            Timbre.STREAM_CODEC.encode(buf, req.requiredTimbre());
+    private static void writeTimbre(RegistryFriendlyByteBuf buf, SoundPredicate req) {
+        buf.writeBoolean(req.timbre != null);
+        if (req.timbre != null) {
+            Timbre.STREAM_CODEC.encode(buf, req.timbre());
         }
     }
 
@@ -134,81 +150,81 @@ public record SoundRequire(
     /**
      * 获取完整的步骤描述（包含所有要求）
      */
-    public static Component getFullDescription(SoundRequire soundRequire) {
+    public static Component getFullDescription(SoundPredicate soundPredicate) {
         StringBuilder description = new StringBuilder();
 
-        description.append(getEnergyDescription(soundRequire).getString());
+        description.append(getEnergyDescription(soundPredicate).getString());
         if (!description.isEmpty() && description.charAt(description.length() - 1) != ' ') description.append(" | ");
-        description.append(getSourceNumDescription(soundRequire).getString());
+        description.append(getSourceNumDescription(soundPredicate).getString());
         if (!description.isEmpty() && description.charAt(description.length() - 1) != ' ') description.append(" | ");
-        description.append(getTimbreDescription(soundRequire).getString());
+        description.append(getTimbreDescription(soundPredicate).getString());
         if (!description.isEmpty() && description.charAt(description.length() - 1) != ' ') description.append(" | ");
-        description.append(getMelodyDescription(soundRequire).getString());
+        description.append(getMelodyDescription(soundPredicate).getString());
 
         return Component.literal(description.toString());
     }
 
-    public static Component getEnergyDescription(SoundRequire soundRequire) {
-        if (soundRequire.minEnergy() != null && soundRequire.maxEnergy() != null) {
+    public static Component getEnergyDescription(SoundPredicate soundPredicate) {
+        if (soundPredicate.minEnergy() != null && soundPredicate.maxEnergy() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.energy",
-                soundRequire.minEnergy(), soundRequire.maxEnergy()
+                soundPredicate.minEnergy(), soundPredicate.maxEnergy()
             );
-        } else if (soundRequire.minEnergy() != null) {
+        } else if (soundPredicate.minEnergy() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.min_energy",
-                soundRequire.minEnergy()
+                soundPredicate.minEnergy()
             );
-        } else if (soundRequire.maxEnergy() != null) {
+        } else if (soundPredicate.maxEnergy() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.max_energy",
-                soundRequire.maxEnergy()
+                soundPredicate.maxEnergy()
             );
         }
         return Component.empty();
     }
 
-    public static Component getSourceNumDescription(SoundRequire soundRequire) {
-        if (soundRequire.minSourceNum() != null && soundRequire.maxSourceNum() != null) {
+    public static Component getSourceNumDescription(SoundPredicate soundPredicate) {
+        if (soundPredicate.minSourceNum() != null && soundPredicate.maxSourceNum() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.sources",
-                soundRequire.minSourceNum(), soundRequire.maxSourceNum()
+                soundPredicate.minSourceNum(), soundPredicate.maxSourceNum()
             );
-        } else if (soundRequire.minSourceNum() != null) {
+        } else if (soundPredicate.minSourceNum() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.min_sources",
-                soundRequire.minSourceNum()
+                soundPredicate.minSourceNum()
             );
-        } else if (soundRequire.maxSourceNum() != null) {
+        } else if (soundPredicate.maxSourceNum() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.max_sources",
-                soundRequire.maxSourceNum()
+                soundPredicate.maxSourceNum()
             );
         }
         return Component.empty();
     }
 
-    public static Component getTimbreDescription(SoundRequire soundRequire) {
-        if (soundRequire.requiredTimbre() != null) {
+    public static Component getTimbreDescription(SoundPredicate soundPredicate) {
+        if (soundPredicate.timbre() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.timbre",
-                soundRequire.requiredTimbre().block().getName()
+                soundPredicate.timbre().block().getName()
             );
         }
         return Component.empty();
     }
 
-    public static Component getMelodyDescription(SoundRequire soundRequire) {
-        if (soundRequire.requiredMelody() != null) {
+    public static Component getMelodyDescription(SoundPredicate soundPredicate) {
+        if (soundPredicate.melody() != null) {
             return Component.translatable(
                 "tooltip.anvilcraft_reverberation.sound_require.melody",
-                soundRequire.requiredMelody().getId().getPath()
+                soundPredicate.melody().getId().getPath()
             );
         }
         return Component.empty();
     }
 
-    public static final SoundRequire EMPTY = new SoundRequire(null, null, null, null, null, null);
+    public static final SoundPredicate EMPTY = new SoundPredicate(null, null, null, null, null, null);
 
     public static Builder builder() {
         return new Builder();
@@ -270,8 +286,8 @@ public record SoundRequire(
             return this;
         }
 
-        public SoundRequire build() {
-            return new SoundRequire(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbre, requiredMelody);
+        public SoundPredicate build() {
+            return new SoundPredicate(minEnergy, maxEnergy, minSourceNum, maxSourceNum, requiredTimbre, requiredMelody);
         }
     }
 }

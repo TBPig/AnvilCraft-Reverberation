@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.anvilcraft.lib.recipe.component.ItemIngredientPredicate;
 import dev.anvilcraft.reverberation.AnvilCraftReverberation;
 import dev.anvilcraft.reverberation.api.MergeSoundStore;
-import dev.anvilcraft.reverberation.api.SoundRequire;
+import dev.anvilcraft.reverberation.recipe.component.SoundPredicate;
 import dev.anvilcraft.reverberation.init.AddonRecipeType;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRequirements;
@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 public record SoundReactorRecipe(
     ItemIngredientPredicate ingredient,
     ItemStack result,
-    SoundRequire soundRequire,
+    SoundPredicate soundPredicate,
     int priority
 ) implements Recipe<RecipeInput> {
 
@@ -91,7 +91,7 @@ public record SoundReactorRecipe(
             .stream()
             .filter(holder -> {
                 SoundReactorRecipe recipe = holder.value();
-                return recipe.matches(new SingleRecipeInput(input), level) && recipe.soundRequire().isValid(mergeSoundStore);
+                return recipe.matches(new SingleRecipeInput(input), level) && recipe.soundPredicate().isValid(mergeSoundStore);
             });
     }
 
@@ -109,7 +109,7 @@ public record SoundReactorRecipe(
         private static final MapCodec<SoundReactorRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             ItemIngredientPredicate.CODEC.fieldOf("ingredient").forGetter(SoundReactorRecipe::ingredient),
             ItemStack.CODEC.fieldOf("result").forGetter(SoundReactorRecipe::result),
-            SoundRequire.CODEC.fieldOf("sound_require").forGetter(SoundReactorRecipe::soundRequire),
+            SoundPredicate.CODEC.fieldOf("sound_require").forGetter(SoundReactorRecipe::soundPredicate),
             Codec.INT.fieldOf("priority").orElse(0).forGetter(SoundReactorRecipe::priority)
         ).apply(instance, SoundReactorRecipe::new));
 
@@ -117,13 +117,13 @@ public record SoundReactorRecipe(
             (buf, recipe) -> {
                 ItemIngredientPredicate.STREAM_CODEC.encode(buf, recipe.ingredient());
                 ItemStack.STREAM_CODEC.encode(buf, recipe.result());
-                SoundRequire.STREAM_CODEC.encode(buf, recipe.soundRequire());
+                SoundPredicate.STREAM_CODEC.encode(buf, recipe.soundPredicate());
                 buf.writeInt(recipe.priority());
             },
             (buf) -> new SoundReactorRecipe(
                 ItemIngredientPredicate.STREAM_CODEC.decode(buf),
                 ItemStack.STREAM_CODEC.decode(buf),
-                SoundRequire.STREAM_CODEC.decode(buf),
+                SoundPredicate.STREAM_CODEC.decode(buf),
                 buf.readInt()
             )
         );
@@ -143,7 +143,7 @@ public record SoundReactorRecipe(
     public static class Builder implements RecipeBuilder {
         private @Nullable ItemIngredientPredicate input;
         private @Nullable ItemStack result;
-        private SoundRequire soundRequire;
+        private SoundPredicate soundPredicate;
         private int priority = 0;
         protected final Map<String, Criterion<?>> criteria = new LinkedHashMap<>();
 
@@ -191,8 +191,8 @@ public record SoundReactorRecipe(
             return this;
         }
 
-        public Builder soundRequire(SoundRequire soundRequire) {
-            this.soundRequire = soundRequire;
+        public Builder sound(SoundPredicate soundPredicate) {
+            this.soundPredicate = soundPredicate;
             return this;
         }
 
@@ -209,7 +209,7 @@ public record SoundReactorRecipe(
             if (result == null) {
                 throw new IllegalArgumentException("Recipe result must not be empty, RecipeId: " + id);
             }
-            if (soundRequire == null) {
+            if (soundPredicate == null) {
                 throw new IllegalArgumentException("Recipe sound require must not be empty, RecipeId: " + id);
             }
 
@@ -222,7 +222,7 @@ public record SoundReactorRecipe(
             SoundReactorRecipe recipe = new SoundReactorRecipe(
                 input,
                 result,
-                soundRequire,
+                soundPredicate,
                 priority
             );
             recipeOutput.accept(id, recipe, advancement.build(id.withPrefix("recipes/")));
