@@ -75,11 +75,11 @@ public class SoundSequenceEtchingCategory implements IRecipeCategory<RecipeHolde
         builder.addSlot(RecipeIngredientRole.INPUT, 41, 4)
             .addIngredients(Ingredient.of(recipe.ingredient().getItems()));
 
-        // Add intermediate (shown as a smaller output)
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 93, 4).addItemStack(recipe.intermediate());
-
         // Add final result
         builder.addSlot(RecipeIngredientRole.OUTPUT, 150, 4).addItemStack(recipe.result());
+
+        // Add intermediate (shown as a smaller output)
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 93, 4).addItemStack(recipe.intermediate());
 
         // Add catalyst slot (the sound reactor block)
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST)

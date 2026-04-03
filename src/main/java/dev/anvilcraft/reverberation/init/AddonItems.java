@@ -35,6 +35,7 @@ public class AddonItems {
 
     public static final ItemEntry<Item> INCOMPLETE_ECHO_METAL_INGOT = REGISTRATE
         .item("incomplete_echo_metal_ingot", Item::new)
+        .removeTab(AddonItemGroups.ADDON_ITEMS.getKey())
         .register();
 
     public static final ItemEntry<Item> ECHO_METAL_INGOT = REGISTRATE
