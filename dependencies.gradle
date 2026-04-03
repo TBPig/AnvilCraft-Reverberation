@@ -3,13 +3,8 @@ dependencies {
     api(libs.registrate)
 
     // Anvil Lib
-    runtimeOnly(libs.anvillib)
-    compileOnly(libs.anvillibConfig)
-    compileOnly(libs.anvillibRecipe)
-    interfaceInjectionData(libs.anvillibRecipe)
-    compileOnly(libs.anvillibMoveableEntityBlock)
-    interfaceInjectionData(libs.anvillibMoveableEntityBlock)
-    compileOnly(libs.anvillibIntegration)
+    implementation(libs.anvillib)
+    interfaceInjectionData(libs.anvillib)
 
     // AnvilCraft
     implementation(libs.anvilcraft) { transitive = false }
