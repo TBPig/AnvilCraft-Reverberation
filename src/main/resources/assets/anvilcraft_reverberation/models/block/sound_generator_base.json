@@ -1,0 +1,41 @@
+{
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "texture_size": [32, 32],
+  "textures": {
+    "3": "anvilcraft_reverberation:block/sound_generator_bottom",
+    "4": "anvilcraft_reverberation:block/sound_generator_edge",
+    "5": "anvilcraft_reverberation:block/sound_generator_top",
+    "particle": "anvilcraft_reverberation:block/sound_generator_bottom"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 4, 16],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8, 2.4, 8]},
+      "faces": {
+        "north": {"uv": [0, 12, 16, 16], "texture": "#4"},
+        "east": {"uv": [0, 12, 16, 16], "texture": "#4"},
+        "south": {"uv": [0, 12, 16, 16], "texture": "#4"},
+        "west": {"uv": [0, 12, 16, 16], "texture": "#4"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#5"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#3"}
+      }
+    },
+    {
+      "from": [2.98, 4, 2.98],
+      "to": [13.02, 3, 13.02],
+      "rotation": {"angle": 0, "axis": "z", "origin": [8, 3, 8]},
+      "faces": {
+        "north": {"uv": [3, 0, 13, 1], "rotation": 180, "texture": "#4"},
+        "east": {"uv": [3, 6, 13, 7], "rotation": 180, "texture": "#4"},
+        "south": {"uv": [3, 4, 13, 5], "rotation": 180, "texture": "#4"},
+        "west": {"uv": [3, 2, 13, 3], "rotation": 180, "texture": "#4"},
+        "up": {"uv": [3, 3, 13, 13], "rotation": 180, "texture": "#3"},
+        "down": {"uv": [3, 3, 13, 13], "rotation": 180, "texture": "#5"}
+      }
+    }
+  ]
+}

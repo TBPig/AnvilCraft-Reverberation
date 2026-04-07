@@ -1,0 +1,25 @@
+{
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "parent": "minecraft:block/block",
+  "texture_size": [32, 32],
+  "textures": {
+    "1": "anvilcraft_reverberation:block/sound_generator_head",
+    "particle": "anvilcraft_reverberation:block/sound_generator_head"
+  },
+  "elements": [
+    {
+      "from": [-4,-4,-4],
+      "to": [4,4,4],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8, 11, 8]},
+      "faces": {
+        "north": {"uv": [4, 4, 12, 12], "texture": "#1"},
+        "east": {"uv": [4, 4, 12, 12], "texture": "#1"},
+        "south": {"uv": [4, 4, 12, 12], "texture": "#1"},
+        "west": {"uv": [4, 4, 12, 12], "texture": "#1"},
+        "up": {"uv": [4, 4, 12, 12], "texture": "#1"},
+        "down": {"uv": [4, 4, 12, 12], "texture": "#1"}
+      }
+    }
+  ]
+}

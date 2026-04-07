@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "anvilcraft_reverberation:block/sound_generator_base"
+    }
+  }
+}

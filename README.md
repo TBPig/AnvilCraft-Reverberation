@@ -1,4 +1,4 @@
-# 铁砧工艺：猪+ | [AnvilCraft:PigsPlus](./README_en.md)
+# 铁砧工艺：砧音绕梁 | [AnvilCraft:Reverberation](./README_en.md)
 ## Minecraft模组 by [三只大猪TB_pig@bilibili](https://space.bilibili.com/87423598)
 
 [//]: # ([![CurseForge downloads]&#40;http://cf.way2muchnoise.eu/full_1380275_downloads.svg&#41;]&#40;https://www.curseforge.com/minecraft/mc-mods/anvilcraft-pigsplus&#41;)

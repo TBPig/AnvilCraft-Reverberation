@@ -6,6 +6,8 @@
   "block.anvilcraft_reverberation.clang_crystal": "ןɐʇsʎɹƆ buɐןƆ",
   "block.anvilcraft_reverberation.echo_metal_block": "ןɐʇǝW oɥɔƎ ɟo ʞɔoןᗺ",
   "block.anvilcraft_reverberation.merge_sound_pillar": "ɹɐןןıԀ punoS ǝbɹǝW",
+  "block.anvilcraft_reverberation.sound_generator": "ɹoʇɐɹǝuǝ⅁ punoS",
+  "block.anvilcraft_reverberation.sound_generator.placement_requires_pillar": "ɹɐןןıԀ punoS ǝbɹǝW ɐ ǝʌoqɐ pǝɔɐןd ǝq ʇsnɯ ɹoʇɐɹǝuǝ⅁ punoS",
   "gui.anvilcraft_reverberation.category.sound_reactor": "ɹoʇɔɐǝᴚ punoS",
   "gui.anvilcraft_reverberation.category.sound_sequence_etching": "buıɥɔʇƎ ǝɔuǝnbǝS punoS",
   "item.anvilcraft_reverberation.acoustic_component": "ʇuǝuodɯoƆ ɔıʇsnoɔⱯ",

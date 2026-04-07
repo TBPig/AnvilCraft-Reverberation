@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "anvilcraft:charge_collector"
+    },
+    "B": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "C": {
+      "tag": "c:ingots/bronze"
+    },
+    "D": {
+      "item": "anvilcraft_reverberation:acoustic_component"
+    }
+  },
+  "pattern": [
+    "BBB",
+    "BDB",
+    "CAC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "anvilcraft_reverberation:sound_generator"
+  }
+}

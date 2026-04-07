@@ -6,6 +6,8 @@
   "block.anvilcraft_reverberation.clang_crystal": "哐当晶体",
   "block.anvilcraft_reverberation.echo_metal_block": "回响金属块",
   "block.anvilcraft_reverberation.merge_sound_pillar": "合音柱",
+  "block.anvilcraft_reverberation.sound_generator": "砧音发电机",
+  "block.anvilcraft_reverberation.sound_generator.placement_requires_pillar": "砧音发电机必须放在合音柱上",
   "gui.anvilcraft_reverberation.category.sound_reactor": "砧音反应",
   "gui.anvilcraft_reverberation.category.sound_sequence_etching": "音序蚀刻",
   "item.anvilcraft_reverberation.acoustic_component": "鸣音部件",

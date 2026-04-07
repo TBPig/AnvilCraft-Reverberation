@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_acoustic_component": {
+      "conditions": {
+        "items": [
+          {
+            "items": "anvilcraft_reverberation:acoustic_component"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "anvilcraft_reverberation:sound_generator"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_acoustic_component"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "anvilcraft_reverberation:sound_generator"
+    ]
+  }
+}
