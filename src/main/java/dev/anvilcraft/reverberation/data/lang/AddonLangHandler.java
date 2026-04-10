@@ -32,6 +32,9 @@ public class AddonLangHandler {
 
         provider.add("gui.anvilcraft_reverberation.category.sound_reactor", "Sound Reactor");
         provider.add("gui.anvilcraft_reverberation.category.sound_sequence_etching", "Sound Sequence Etching");
+
         provider.add("block.anvilcraft_reverberation.sound_generator.placement_requires_pillar", "Sound Generator must be placed above a Merge Sound Pillar");
+
+        provider.add("config.jade.plugin_anvilcraft_reverberation.merge_sound_pillar", "Merge Sound Pillar");
     }
 }

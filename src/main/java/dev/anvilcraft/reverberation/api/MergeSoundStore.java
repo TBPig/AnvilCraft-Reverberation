@@ -24,6 +24,9 @@ public class MergeSoundStore extends MergeSound {
     }
 
     public MergeSound getLastSound() {
-        return soundHistory.getLast() == null ? new MergeSound() : soundHistory.getLast();
+        if (soundHistory.isEmpty()) {
+            return new MergeSound();
+        }
+        return soundHistory.getLast();
     }
 }

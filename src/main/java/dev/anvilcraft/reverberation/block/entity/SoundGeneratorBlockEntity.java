@@ -1,8 +1,8 @@
 package dev.anvilcraft.reverberation.block.entity;
 
 import dev.anvilcraft.reverberation.api.MergeSound;
-import dev.anvilcraft.reverberation.block.SoundGeneratorBlock;
 import dev.anvilcraft.reverberation.init.AddonBlockEntities;
+import dev.anvilcraft.reverberation.init.AddonMelodies;
 import dev.dubhe.anvilcraft.api.power.IPowerProducer;
 import dev.dubhe.anvilcraft.api.power.PowerGrid;
 import lombok.Getter;
@@ -16,10 +16,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class SoundGeneratorBlockEntity extends BlockEntity implements IPowerProducer {
-    public static final int MAX_POWER = 256;
-    public static final int POWER_PER_ENERGY = 1;
+import static dev.anvilcraft.reverberation.AnvilCraftReverberation.CONFIG;
 
+public class SoundGeneratorBlockEntity extends BlockEntity implements IPowerProducer {
     @Setter
     @Getter
     private PowerGrid grid = null;
@@ -63,7 +62,12 @@ public class SoundGeneratorBlockEntity extends BlockEntity implements IPowerProd
         if (belowEntity instanceof MergeSoundPillarBlockEntity pillarEntity) {
             MergeSound mergeSound = pillarEntity.getMergeSound();
             int energy = mergeSound.getEnergy();
-            power = Math.min(energy * POWER_PER_ENERGY, MAX_POWER);
+            int maxPower = CONFIG.soundGenerator.maxPower;
+            double powerPerEnergy = CONFIG.soundGenerator.powerPerEnergy;
+            power = (int) Math.min(energy * powerPerEnergy, maxPower);
+            if (AddonMelodies.HIGHER_MELODY.satisfy(pillarEntity)) {
+                power *= CONFIG.soundGenerator.higherMelodyMultiplier;
+            }
         } else {
             power = 0;
         }

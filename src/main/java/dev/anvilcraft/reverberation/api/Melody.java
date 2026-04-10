@@ -2,6 +2,7 @@ package dev.anvilcraft.reverberation.api;
 
 import com.google.common.base.Supplier;
 import com.mojang.serialization.Codec;
+import dev.anvilcraft.reverberation.block.entity.MergeSoundPillarBlockEntity;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -22,8 +23,8 @@ public abstract class Melody {
         (buf) -> Melody.getOrThrow(ResourceLocation.STREAM_CODEC.decode(buf))
     );
 
-    public static Melody register(Supplier<Melody> f) {
-        Melody melody = f.get();
+    public static <T extends Melody> T register(Supplier<T> f) {
+        T melody = f.get();
         MELODY_REGISTRY.put(melody.getId(), melody);
         return melody;
     }
@@ -34,6 +35,10 @@ public abstract class Melody {
             throw new IllegalArgumentException("Unknown Melody: " + id);
         }
         return melody;
+    }
+
+    public boolean satisfy(MergeSoundPillarBlockEntity mergeSoundPillarBlockEntity) {
+        return satisfy(mergeSoundPillarBlockEntity.getSound());
     }
 
     public abstract boolean satisfy(MergeSoundStore mergeSoundStore);

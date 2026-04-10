@@ -1,6 +1,15 @@
 {
   "anvilcraft_reverberation.configuration.section.anvilcraft_reverberation.common.toml": "砧音绕梁常规配置",
   "anvilcraft_reverberation.configuration.section.anvilcraft_reverberation.common.toml.title": "砧音绕梁常规配置",
+  "anvilcraft_reverberation.configuration.sound_generator": "砧音发电机",
+  "anvilcraft_reverberation.configuration.sound_generator.button": "砧音发电机",
+  "anvilcraft_reverberation.configuration.sound_generator.higher_melody_multiplier": "上升氛围乘数",
+  "anvilcraft_reverberation.configuration.sound_generator.higher_melody_multiplier.tooltip": "处于上升氛围时，发电量将乘以这个倍率",
+  "anvilcraft_reverberation.configuration.sound_generator.max_power": "砧音发电机的最大发电量",
+  "anvilcraft_reverberation.configuration.sound_generator.max_power.tooltip": "砧音发电机的最大发电量",
+  "anvilcraft_reverberation.configuration.sound_generator.power_per_energy": "能量音能比",
+  "anvilcraft_reverberation.configuration.sound_generator.power_per_energy.tooltip": "每点音能提供多少能量",
+  "anvilcraft_reverberation.configuration.sound_generator.tooltip": "砧音发电机",
   "anvilcraft_reverberation.configuration.title": "铁砧工艺：砧音绕梁 配置",
   "block.anvilcraft_reverberation.anvil_sound_reactor": "砧音反应釜",
   "block.anvilcraft_reverberation.clang_crystal": "哐当晶体",
@@ -29,5 +38,6 @@
   "tooltip.anvilcraft_reverberation.sound_sequence.progress": "音序蚀刻进度",
   "tooltip.anvilcraft_reverberation.sound_sequence.step": "§8步骤：%d / %d",
   "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.energy": "声能：%s",
-  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num": "声源数量：%s"
+  "tooltip.jade.anvilcraft_reverberation.merge_sound_pillar.source_num": "声源数量：%s",
+  "config.jade.plugin_anvilcraft_reverberation.merge_sound_pillar": "合音柱"
 }

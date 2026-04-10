@@ -7,10 +7,10 @@ import dev.anvilcraft.reverberation.melody.LowerMelody;
 
 @SuppressWarnings("unused")
 public class AddonMelodies {
-    public static final Melody LOWER_MELODY = Melody.register(LowerMelody::new);
-    public static final Melody HIGHER_MELODY = Melody.register(HigherMelody::new);
-    //    public static final Melody ABLATION_MELODY = Melody.register(AblationMelody::new);
-    public static final Melody EQUAL_MELODY = Melody.register(EqualMelody::new);
+    public static final LowerMelody LOWER_MELODY = Melody.register(LowerMelody::new);
+    public static final HigherMelody HIGHER_MELODY = Melody.register(HigherMelody::new);
+    //    public static final AblationMelody ABLATION_MELODY = Melody.register(AblationMelody::new);
+    public static final EqualMelody EQUAL_MELODY = Melody.register(EqualMelody::new);
 
     public static void register() {
     }

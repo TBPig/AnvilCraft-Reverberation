@@ -3,7 +3,6 @@
   "credit": "Made with Blockbench",
   "parent": "minecraft:block/block",
   "render_type": "minecraft:cutout",
-  "texture_size": [32, 32],
   "textures": {
     "3": "anvilcraft_reverberation:block/sound_generator_bottom",
     "4": "anvilcraft_reverberation:block/sound_generator_edge",
